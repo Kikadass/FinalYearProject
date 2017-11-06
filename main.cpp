@@ -1,11 +1,12 @@
-#include <opencv2/core/core.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/highgui/highgui.hpp>
 
 #include <iostream>
-#include <opencv/cv.hpp>
+#include <cmath>
+#include <vector>
+#include <assert.h>
+#include "include/Net.h"
+#include "include/TrainingData.h"
 
-using namespace cv;
+
 using namespace std;
 
 // distance between point 1 and point 2
@@ -13,42 +14,70 @@ double distance(double x1, double y1, double x2, double y2) {
     return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }
 
-
-// exchange black to white and white to black and all gray levels in the middle
-void negativeImage(Mat& image) {
-    for (int i = 0; i < image.rows; i++) {
-        for (int j = 0; j < image.cols; j++) {
-            image.at<float>(i, j) = 1 - image.at<float>(i, j);
-        }
+void showVector(string label, vector<double> &v){
+    cout << label << " ";
+    for (int i = 0; i < v.size(); i++){
+        cout << v[i] << " ";
     }
+    cout << endl;
 }
 
 int main( int argc, char** argv ) {
-    Mat original;
 
-    // Read the file
-    original = imread("../PandaOriginal.bmp", CV_LOAD_IMAGE_COLOR);
+    TrainingData trainData;
 
+    vector<double> topology;
+    trainData.getTopology(topology);
+    topology.push_back(0);
+    topology.push_back(1);
 
-    if(!original.data ){                              // Check for invalid input
-        cout <<  "Could not open or find the image" << std::endl ;
-        return -1;
-    }
-
-
-    namedWindow("ORIGINAL", CV_WINDOW_AUTOSIZE);// Create a window for display.
-
-    imshow("ORIGINAL", original);
+    Net myNet(topology);
 
 
-    // put each image next to each other
-    moveWindow("ORIGINAL", 0, 0);            // put window in certain position in the screen
 
-    //infinite loop
-    while (1) {
-        // if pressed ESC it closes the program
-        if (waitKeyEx(10) == 27) {
-            return 0;
+    vector<double> inputs;
+    vector<double> targets;
+    vector<double> results;
+
+
+
+    int trainingPass = 0;
+
+    while (trainingPass < 2000){
+        trainingPass++;
+        cout << endl << "Pass "<< trainingPass;
+
+        // Get new inputs data and feed it forward;
+        inputs.clear();
+        if (trainData.getNextInputs(inputs) != topology[0]){
+            break;
         }
+
+        showVector(": Inputs:", inputs);
+        myNet.feedForward(inputs);
+
+        //Collect the net's actual results
+        myNet.getResults(results);
+        showVector("Outputs:", results);
+
+        //Train the net what the ouputs should have been
+        trainData.getTargetOutputs(targets);
+        showVector("Targets:", targets);
+
+        assert(targets.size() == topology.back());
+
+        myNet.backProp(targets);
+
+        //Report how well the training is working. averaged over recent...
+        cout << "Net recent average error: " << myNet.getRecentAverageError() << endl;
+
+
     }
+
+    cout << "DONE" << endl;
+
+    myNet.feedForward(inputs);
+    myNet.backProp(targets);
+    myNet.getResults(results);
+
 }
