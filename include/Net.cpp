@@ -16,13 +16,13 @@ Net::Net(const vector<double> &topology){
 
         //We have made a new Layer, now fill it with neurons
         // and add a bias neuron to the layer
-        for (int neuronNum = 0; neuronNum < topology[layerNum]; neuronNum++){
+        for (int neuronNum = 0; neuronNum < topology[layerNum]+1; neuronNum++){
             m_layers.back().push_back(Neuron(numOutputs, neuronNum));
             cout << "Made a Neuron" << endl;
         }
 
         //Force the bias node's output value to 1
-        //m_layers.back().back().setOutput(1);
+        m_layers.back().back().setOutput(1);
     }
 
     recentAverageSmoothingFac = 100.0;
@@ -32,20 +32,24 @@ Net::Net(const vector<double> &topology){
 void Net::feedForward(vector<double> &inputs){
 
     // this is a check to know if our assumption is true. if not an error will appear
-    assert(inputs.size() == m_layers[0].size());
+    assert(inputs.size() == m_layers[0].size()-1);
 
     //Assign (latch) the input values into the input neurons
+    // Don't take bias into account
     for(int i = 0; i < inputs.size(); i++){
         m_layers[0][i].setOutput(inputs[i]);
     }
 
     //Forward propagation
-    //cout << "layers size: " << m_layers.size();
     for (int layerNum = 1; layerNum < m_layers.size(); layerNum++) {
 
         vector<Neuron> &prevLayer = m_layers[layerNum-1];
-        //cout << endl << "New layer: " << endl;
-        for (int i = 0; i < m_layers[layerNum].size(); i++) {
+        //cout << endl << "DIFFERENT LAYER:  " << layerNum << endl;
+
+        // do not take into account bias
+        for (int i = 0; i < m_layers[layerNum].size()-1; i++) {
+            //cout << endl << "DIFFERENT Neuron:  " << i << endl;
+
             m_layers[layerNum][i].feedForward(prevLayer);
         }
     }
@@ -59,7 +63,7 @@ void Net::backProp(vector<double> &targets){
 
 
     // not including the bias
-    for (int i = 0; i < outputLayer.size(); i++){
+    for (int i = 0; i < outputLayer.size()-1; i++){
         double delta = targets[i] - outputLayer[i].getOutput();
         //cout << "Delta: " << targets[i] << "-" << outputLayer[i].getOutput() << endl;
 
@@ -83,7 +87,7 @@ void Net::backProp(vector<double> &targets){
     recentAverageError = (recentAverageError * recentAverageSmoothingFac + error) / (recentAverageSmoothingFac + 1);
 
     // Calculate output layer gradients(bias not taken into account)
-    for (int i = 0; i < outputLayer.size(); i++){
+    for (int i = 0; i < outputLayer.size()-1; i++){
         outputLayer[i].calcOutputGradients(targets[i]);
     }
 
@@ -102,13 +106,14 @@ void Net::backProp(vector<double> &targets){
     // update connection weights
 
     cout << "Updating Weights" << endl;
-    for (int layerNum = m_layers.size()-2; layerNum > 0; --layerNum){
+    for (int layerNum = m_layers.size()-1; layerNum > 0; --layerNum){
         vector<Neuron> &layer = m_layers[layerNum];
         vector<Neuron> &prevLayer = m_layers[layerNum -1];
 
-        //cout << "DIFFERENT LAYER:  " << layerNum << endl;
-        for (int i = 0; i < layer.size(); i++){
-            //cout << "NEW Neuron: " <<i << endl << endl;
+        cout << "DIFFERENT LAYER:  " << layerNum << endl;
+        // don't take into account the bias as there are no connections from previous layer to the bias
+        for (int i = 0; i < layer.size()-1; i++){
+            cout << "NEW Neuron: " <<i << endl << endl;
 
             layer[i].updateInputWeights(prevLayer);
         }
@@ -120,7 +125,7 @@ void Net::backProp(vector<double> &targets){
 void Net::getResults(vector<double> &result){
     result.clear();
 
-    for(int i = 0; i < m_layers.back().size(); i++){
+    for(int i = 0; i < m_layers.back().size()-1; i++){
         result.push_back(m_layers.back()[i].getOutput());
     }
 }

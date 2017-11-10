@@ -15,7 +15,7 @@ Neuron::Neuron(unsigned outputs, unsigned index){
     myIndex = index;
 }
 
-double Neuron::eta = 1; // overall net learning rate
+double Neuron::eta = 0.5; // overall net learning rate
 double Neuron::alpha = 0.1; // momentum, multiplier of last deltaWeight [0 to n]
 
 double Neuron::transferFunction(double x){
@@ -60,9 +60,11 @@ void Neuron::feedForward(vector<Neuron> & prevLayer){
 void Neuron::calcOutputGradients(double target){
     double delta = target - output;
     gradient = delta * transferFunctionDerivative(output);
+    /*
     cout << "gradient of output: " << gradient << endl;
     cout << "transferFunctionDerivative(output): " << transferFunctionDerivative(output) << endl;
     cout << "delta: " << delta << endl;
+     */
 
 }
 

@@ -25,6 +25,7 @@ void showVector(string label, vector<double> &v){
 int main( int argc, char** argv ) {
 
     //srand(time(nullptr));
+    srand(0);
 
     TrainingData trainData;
 
@@ -42,11 +43,9 @@ int main( int argc, char** argv ) {
 
 
 
-    int trainingPass = 0;
 
-    while (trainingPass < 2000){
-        trainingPass++;
-        cout << endl << "Pass "<< trainingPass;
+    for (int i = 0; i < 5000; i++){
+        cout << endl << "Pass "<< i;
 
         // Get new inputs data and feed it forward;
         inputs.clear();
