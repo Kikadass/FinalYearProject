@@ -24,12 +24,13 @@ void showVector(string label, vector<double> &v){
 
 int main( int argc, char** argv ) {
 
+    //srand(time(nullptr));
+
     TrainingData trainData;
 
     vector<double> topology;
     trainData.getTopology(topology);
-    topology.push_back(0);
-    topology.push_back(1);
+
 
     Net myNet(topology);
 
@@ -56,6 +57,7 @@ int main( int argc, char** argv ) {
         showVector(": Inputs:", inputs);
         myNet.feedForward(inputs);
 
+
         //Collect the net's actual results
         myNet.getResults(results);
         showVector("Outputs:", results);
@@ -71,13 +73,7 @@ int main( int argc, char** argv ) {
         //Report how well the training is working. averaged over recent...
         cout << "Net recent average error: " << myNet.getRecentAverageError() << endl;
 
-
     }
 
     cout << "DONE" << endl;
-
-    myNet.feedForward(inputs);
-    myNet.backProp(targets);
-    myNet.getResults(results);
-
 }
