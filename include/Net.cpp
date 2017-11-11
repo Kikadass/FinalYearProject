@@ -70,7 +70,7 @@ void Net::backProp(vector<double> &targets){
         error += delta*delta;
     }
 
-    error /= outputLayer.size(); // get average error squared
+    error /= outputLayer.size()-1; // get average error squared
     error = sqrt(error); //RMS
 
 
