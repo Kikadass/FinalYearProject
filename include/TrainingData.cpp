@@ -21,7 +21,7 @@ unsigned TrainingData::getNextInputs(vector<double> &inputs){
     input1 = rand()%2;
     input2 = rand()%2;
 
-    //targetOutput = input1^input2; //XOR
+    targetOutput = input1^input2; //XOR
     //targetOutput = ((input1^input2) == 1) ? 0 : 1; // !XOR
     //targetOutput = (input1 == input2 && input1 == 1) ? 1 : 0; // And
     //targetOutput = (input1 == input2 && input1 == 1) ? 0 : 1; // !And

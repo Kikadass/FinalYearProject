@@ -78,7 +78,8 @@ double Neuron::sumDOW(const vector<Neuron> &nextLayer) const{
     double sum = 0;
 
     // Sum our contributions of the errors at the nodes we feed
-    for(int i = 0; i < nextLayer.size(); i++){
+    // don't take into account the bias
+    for(int i = 0; i < nextLayer.size() - 1; i++){
         sum += outputWeights[i].weight * nextLayer[i].gradient;
     }
 

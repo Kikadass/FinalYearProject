@@ -44,7 +44,7 @@ int main( int argc, char** argv ) {
 
 
 
-    for (int i = 0; i < 5000; i++){
+    for (int i = 0; i < 100; i++){
         cout << endl << "Pass "<< i;
 
         // Get new inputs data and feed it forward;
