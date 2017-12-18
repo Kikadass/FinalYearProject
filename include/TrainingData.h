@@ -21,9 +21,7 @@ public:
     unsigned getTargetOutputs(vector<double> &targetOutput);
 
 private:
-    int input1;
-    int input2;
-    int targetOutput;
+    vector<double> targets;
 
 };
 

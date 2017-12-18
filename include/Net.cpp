@@ -110,10 +110,10 @@ void Net::backProp(vector<double> &targets){
         vector<Neuron> &layer = m_layers[layerNum];
         vector<Neuron> &prevLayer = m_layers[layerNum -1];
 
-        cout << "DIFFERENT LAYER:  " << layerNum << endl;
+        //cout << "DIFFERENT LAYER:  " << layerNum << endl;
         // don't take into account the bias as there are no connections from previous layer to the bias
         for (int i = 0; i < layer.size()-1; i++){
-            cout << "NEW Neuron: " <<i << endl << endl;
+            //cout << "NEW Neuron: " <<i << endl << endl;
 
             layer[i].updateInputWeights(prevLayer);
         }
