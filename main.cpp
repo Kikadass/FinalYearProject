@@ -207,10 +207,10 @@ Mat getScreen(){
     // grab the active displays
     CGGetActiveDisplayList(32, displays, &displayCount);
 
-    CGImageRef CGImage = CGDisplayCreateImage(displays[0]);
+    CGRect frame = CGRectMake(0, 100, 630, 400);
 
+    CGImageRef CGImage = CGDisplayCreateImageForRect(displays[0], frame);
 
-    cout << "Display count: " << displayCount << endl;
 
     if (CGImage == NULL){
         cout << "CGImage did not read the display successfully." << endl;
@@ -240,6 +240,8 @@ Mat getScreen(){
     cvtColor(image, image, CV_RGB2BGR);
 
     imshow("ORIGINAL", image);
+    moveWindow("ORIGINAL", 650, 0);
+
 
     return image;
 }
@@ -249,12 +251,13 @@ Mat getScreen(){
 
 
 int main( int argc, char** argv ) {
-    Mat image = getScreen();
+
 
     //infinite Exit loop
     while (1) {
+        Mat image = getScreen();
         // if pressed ESC it closes the program
-        if (waitKeyEx(10) == 27) {
+        if (waitKeyEx(100) == 27) {
             return 0;
         }
     }
