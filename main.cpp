@@ -11,6 +11,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv/cv.hpp>
+#include <opencv2/core/types.hpp>
 
 using namespace std;
 using namespace cv;
@@ -207,7 +208,7 @@ Mat getScreen(){
     // grab the active displays
     CGGetActiveDisplayList(32, displays, &displayCount);
 
-    CGRect frame = CGRectMake(0, 100, 630, 400);
+    CGRect frame = CGRectMake(0, 110, 640, 400);
 
     CGImageRef CGImage = CGDisplayCreateImageForRect(displays[0], frame);
 
@@ -247,17 +248,63 @@ Mat getScreen(){
 }
 
 
+vector<Mat> getTiles(Mat screen) {
+    int height = screen.rows;
+    int width = screen.cols;
+    int tileHeight = 24;
+    int tileWidth = 32;
 
+    // split in 3 planes RGB
+    vector<Mat> planes;
+    split(screen, planes);
+
+    Mat boarder1 = planes[2](cv::Rect(0, 0, tileWidth, height));
+    Mat boarder2 = planes[2](cv::Rect(width-tileWidth, 0, tileWidth, height));
+    imshow("Boarder1", boarder1);
+    imshow("Boarder2", boarder2);
+    moveWindow("Boarder1", 650, 100);
+    moveWindow("Boarder2", 750, 100);
+
+
+    for (int i = 0; i < (height / tileHeight) * tileHeight; i += tileHeight) {
+        for (int j = 0; j < (width / tileWidth) * tileWidth; j += tileWidth) {
+            //get 8x8 block from image from (j,i) coordinates
+            Mat block;
+            cout << "j:" << j << endl;
+            if (j == 0) block = boarder1(cv::Rect(j, i, tileWidth, tileHeight));
+            else if (j <= (((width / tileWidth)/2)-1) * tileWidth ) block = planes[2](cv::Rect(j, i, tileWidth, tileHeight));
+            else if (j >= width-tileWidth) block = boarder2(cv::Rect(0, i, tileWidth, tileHeight));
+            else  block = planes[2](cv::Rect(j+16, i, tileWidth, tileHeight));
+
+            cout << "j:" << j << endl;
+            cout << "max:" << (((width / tileWidth)/2)-1) * tileWidth << endl;
+
+            imshow("block", block);
+            moveWindow("block", 650, 0);
+            // if pressed ESC it closes the program
+            if (waitKeyEx(10000) == 27) {
+            }
+
+
+        }
+    }
+
+    return planes;
+}
 
 
 int main( int argc, char** argv ) {
 
+    sleep(2);
 
     //infinite Exit loop
     while (1) {
-        Mat image = getScreen();
+        Mat screen = getScreen();
+        if (waitKeyEx(10000) == 27) {
+        }
+        getTiles(screen);
         // if pressed ESC it closes the program
-        if (waitKeyEx(100) == 27) {
+        if (waitKeyEx(10000) == 27) {
             return 0;
         }
     }
