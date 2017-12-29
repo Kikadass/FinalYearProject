@@ -12,6 +12,9 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv/cv.hpp>
 #include <opencv2/core/types.hpp>
+#include <sstream>
+#include "dirent.h"
+#include <regex>
 
 using namespace std;
 using namespace cv;
@@ -141,6 +144,21 @@ double distance(double x1, double y1, double x2, double y2) {
     return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }
 
+float averageErrorBnW(Mat& originalImage, Mat& image){
+
+    float error = 0;
+    for (int r = 0; r < image.rows; r++) {
+        for (int c = 0; c < image.cols; c++) {
+            float tmp = abs(originalImage.at<uchar>(r,c) - image.at<uchar>(r,c));
+            error += tmp*tmp;
+        }
+    }
+
+    error /= image.rows*image.cols;
+
+    return error;
+}
+
 void showVector(string label, vector<double> &v){
     cout << label << " ";
     for (int i = 0; i < v.size(); i++){
@@ -208,7 +226,7 @@ Mat getScreen(){
     // grab the active displays
     CGGetActiveDisplayList(32, displays, &displayCount);
 
-    CGRect frame = CGRectMake(0, 110, 640, 400);
+    CGRect frame = CGRectMake(0, 109, 640, 400);
 
     CGImageRef CGImage = CGDisplayCreateImageForRect(displays[0], frame);
 
@@ -248,7 +266,7 @@ Mat getScreen(){
 }
 
 
-vector<Mat> getTiles(Mat screen) {
+Mat getTiles(Mat screen, vector<Mat> sprites) {
     int height = screen.rows;
     int width = screen.cols;
     int tileHeight = 24;
@@ -258,53 +276,128 @@ vector<Mat> getTiles(Mat screen) {
     vector<Mat> planes;
     split(screen, planes);
 
-    Mat boarder1 = planes[2](cv::Rect(0, 0, tileWidth, height));
-    Mat boarder2 = planes[2](cv::Rect(width-tileWidth, 0, tileWidth, height));
+    int planeToCheck = 2;
+
+    Mat tiles = Mat(height / tileHeight, width / tileWidth, CV_32F);
+
+    Mat boarder1 = planes[planeToCheck](cv::Rect(0, 0, tileWidth, height));
+    Mat boarder2 = planes[planeToCheck](cv::Rect(width-tileWidth, 0, tileWidth, height));
+    /*
     imshow("Boarder1", boarder1);
     imshow("Boarder2", boarder2);
     moveWindow("Boarder1", 650, 100);
     moveWindow("Boarder2", 750, 100);
+*/
+    imshow("Plane", planes[planeToCheck]);
+    moveWindow("Plane", 650, 500);
 
 
     for (int i = 0; i < (height / tileHeight) * tileHeight; i += tileHeight) {
         for (int j = 0; j < (width / tileWidth) * tileWidth; j += tileWidth) {
             //get 8x8 block from image from (j,i) coordinates
             Mat block;
-            cout << "j:" << j << endl;
             if (j == 0) block = boarder1(cv::Rect(j, i, tileWidth, tileHeight));
-            else if (j <= (((width / tileWidth)/2)-1) * tileWidth ) block = planes[2](cv::Rect(j, i, tileWidth, tileHeight));
-            else if (j >= width-tileWidth) block = boarder2(cv::Rect(0, i, tileWidth, tileHeight));
-            else  block = planes[2](cv::Rect(j+16, i, tileWidth, tileHeight));
+            else block = planes[planeToCheck](cv::Rect(j, i, tileWidth, tileHeight));
 
-            cout << "j:" << j << endl;
-            cout << "max:" << (((width / tileWidth)/2)-1) * tileWidth << endl;
+            bool spriteFound = false;
+            for (int k = 0; k < sprites.size(); k++){
+                if (averageErrorBnW(sprites[k], block) < 500){
+                    spriteFound = true;
+                    if (k < 2) tiles.at<float>(i/tileHeight,j/tileWidth) = 0;   //Blank
+                    else if (k >= 2 && k < 6) tiles.at<float>(i/tileHeight,j/tileWidth) = 0.2; // Ghosts
+                    else if (k == 6 ) tiles.at<float>(i/tileHeight,j/tileWidth) = 0.4; // player
+                    else if (k >= 7 && k < 9) tiles.at<float>(i/tileHeight,j/tileWidth) = 0.6; // points
+                    else if (k >= 9 && k < 11) tiles.at<float>(i/tileHeight,j/tileWidth) = 0.8; // ExtraPoints
+                    else if (k >= 11) tiles.at<float>(i/tileHeight,j/tileWidth) = 1;  // Walls
 
-            imshow("block", block);
-            moveWindow("block", 650, 0);
-            // if pressed ESC it closes the program
-            if (waitKeyEx(10000) == 27) {
+                }
             }
+            if (!spriteFound) tiles.at<float>(i/tileHeight,j/tileWidth) = 8796;
 
-
+            //stringstream pictureName;
+            //pictureName << "Tile" << j << "-" << i << ".bmp";
+            //imwrite(pictureName.str(), block);
+            //cout << "Erms: " << averageErrorBnW(block, block) << endl;
         }
     }
 
-    return planes;
+    return tiles;
 }
 
+void getSprites(vector<Mat>& sprites, char* location){
+    DIR *dir;
+    struct dirent *ent;
+    if ((dir = opendir (location)) != NULL) {
+
+        /* print all the files and directories within directory */
+        while ((ent = readdir (dir)) != NULL) {
+
+            cout << regex_match (ent->d_name, regex("\\.(.*)")) << endl;
+            if (regex_match (ent->d_name, regex("\\.(.*)"))){
+                cout << "File beggining with . is not accepted:" << ent->d_name << endl;
+                continue;
+            }
+            char* subLocation = new char[strlen(location) + 1 + strlen(ent->d_name)+1];
+
+            strcpy(subLocation, location);
+            strcat(subLocation, ent->d_name);
+            strcat(subLocation, "/");
+            getSprites(sprites, subLocation);
+            delete [] subLocation;
+
+        }
+        closedir (dir);
+
+    } else {
+        cout << "Directory does not exist!" << endl;
+        location[strlen(location)-1] = 0;
+        Mat sprite = imread(location, CV_LOAD_IMAGE_GRAYSCALE);
+        if (!sprite.data) {
+            cout << "Could not open or find the image in: " << location << endl;
+        }
+        else {
+            cout << "Saving sprite: " << location << endl;
+            sprites.push_back(sprite);
+        }
+    }
+}
+
+Mat scaleUp(Mat image, int scale){
+    resize(image, image, image.size()*scale, scale, scale);   //resize image
+    imshow("Tiles3", image);                   // Show our image inside it.
+    return image;
+}
+
+/*
+226 pared y puntos
+209-208 jugador
+ 214 fantasma asustado a punto de aparecer
+198 fantasma rojo
+ 196 fantasma rosa
+ 179 fantasma naranja
+ 88 fantasma verde
+68 fantasma asustado
+ 182 cerecas
+ */
+
+// size 21x14
 
 int main( int argc, char** argv ) {
+    vector<Mat> sprites;
+    char* startLocation = "../Images/";
+    getSprites(sprites, startLocation);
 
     sleep(2);
-
     //infinite Exit loop
     while (1) {
         Mat screen = getScreen();
-        if (waitKeyEx(10000) == 27) {
-        }
-        getTiles(screen);
+
+        Mat tiles = getTiles(screen, sprites);
+
+        scaleUp(tiles, 20);
+
         // if pressed ESC it closes the program
-        if (waitKeyEx(10000) == 27) {
+        if (waitKeyEx(250) == 27) {
             return 0;
         }
     }
@@ -312,6 +405,7 @@ int main( int argc, char** argv ) {
 
     int x;
     cin >> x;
+
 
     srand(time(nullptr));
     //srand(0);

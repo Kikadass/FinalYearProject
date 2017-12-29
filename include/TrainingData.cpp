@@ -12,7 +12,7 @@ void TrainingData::getTopology(vector<double> &topology){
     topology.push_back(2);
     topology.push_back(4);
     //topology.push_back(4);
-    topology.push_back(4);
+    topology.push_back(1);
 }
 
 unsigned TrainingData::getNextInputs(vector<double> &inputs){
@@ -20,7 +20,7 @@ unsigned TrainingData::getNextInputs(vector<double> &inputs){
     targets.clear();
 
     inputs.push_back((double)(rand()%5)/10.0);
-    inputs.push_back((double)(rand()%5)/10.0);
+    inputs.push_back(-(double)(rand()%5)/10.0);
 
     //targetOutput = inputs[0]^inputs[1]; //XOR
     //targetOutput = ((inputs[0]^inputs[1]) == 1) ? 0 : 1; // !XOR
@@ -31,7 +31,7 @@ unsigned TrainingData::getNextInputs(vector<double> &inputs){
 
 
     targets.push_back(inputs[0] - inputs[1]);
-    targets.push_back(inputs[0] + inputs[1]);
+    //targets.push_back(inputs[0] + inputs[1]);
 
     return inputs.size();
 }
