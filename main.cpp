@@ -327,6 +327,7 @@ Mat getTiles(Mat screen, vector<Mat> sprites) {
                 if (averageErrorBnW(sprites[k], block) < aeBnW) {
                     mostSimilar = k;
                     aeBnW = averageErrorBnW(sprites[k], block);
+                    //absdiff();
                     if (averageErrorBnW(sprites[k], block) < 500) {
                         spriteFound = true;
                     }
@@ -334,13 +335,15 @@ Mat getTiles(Mat screen, vector<Mat> sprites) {
                 if (spriteFound || (k + 1) == sprites.size()) {
 
                     if (mostSimilar < 0 || !spriteFound && aeBnW > 1000) {
+                        /*
                         cout << "No sprite found!" << endl;
                         cout << "AVERAGE ERROR" << aeBnW << "  :  " << mostSimilar << endl;
                         cout << block << endl;
                         cout << sprites[mostSimilar] << endl;
                         imshow("BLOCK", block);
                         waitKeyEx(25000);
-                        tiles.at<float>(i / tileHeight, j / tileWidth) = 8796;
+                         */
+                        tiles.at<float>(i / tileHeight, j / tileWidth) = 0.9;
                     }
                     else if (mostSimilar < 2) tiles.at<float>(i / tileHeight, j / tileWidth) = 0;   //Blank
                     else if (mostSimilar >= 2 && mostSimilar < 7)
@@ -356,14 +359,6 @@ Mat getTiles(Mat screen, vector<Mat> sprites) {
                     continue;
                 }
             }
-
-            //stringstream pictureName;
-            //pictureName << "Tile" << j << "-" << i << ".bmp";
-            //cout << pictureName.str() << endl;
-            //imshow("Block", block);
-            //imwrite(pictureName.str(), block);
-            //cout << "Erms: " << averageErrorBnW(block, block) << block << endl;
-            //waitKeyEx(25000);
         }
     }
 
@@ -441,6 +436,11 @@ int main( int argc, char** argv ) {
 
         Mat tiles = getTiles(screen, sprites);
         cout << tiles << endl;
+
+        Mat saveTiles;
+        normalize(tiles, saveTiles, 0, 255, CV_MINMAX);
+        imwrite("TileMap.bmp", saveTiles);
+
         scaleUp(tiles, 20);
 
         // if pressed ESC it closes the program
