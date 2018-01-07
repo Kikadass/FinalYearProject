@@ -265,6 +265,29 @@ Mat getScreen(){
     return image;
 }
 
+// function created to go through the screen plane 2 (Blue) and save manually selected blocks
+// Press ESC to save that block or any other button to continue without saving
+void goThroughScreenAndSave(int height, int width, int tileHeight, int tileWidth, Mat boarder1, vector<Mat> planes){
+    for (int i = 0; i < (height / tileHeight) * tileHeight; i += tileHeight) {
+        for (int j = 0; j < (width / tileWidth) * tileWidth - tileWidth; j++) {
+            //get 8x8 block from image from (j,i) coordinates
+            Mat block;
+            if (j == 0) block = boarder1(cv::Rect(j, i, tileWidth, tileHeight));
+            else block = planes[2](cv::Rect(j, i, tileWidth, tileHeight));
+
+            //stringstream pictureName;
+            //pictureName << "Ghost1.bmp";
+            stringstream pictureName;
+            pictureName << "Tile" << j << "-" << i << ".bmp";
+            cout << pictureName.str() << endl;
+            imshow("Block", block);
+            if (waitKeyEx(25000) == 27) {
+                imwrite(pictureName.str(), block);
+            }
+            //cout << "Erms: " << averageErrorBnW(block, block) << block << endl;
+        }
+    }
+}
 
 Mat getTiles(Mat screen, vector<Mat> sprites) {
     int height = screen.rows;
@@ -281,16 +304,11 @@ Mat getTiles(Mat screen, vector<Mat> sprites) {
     Mat tiles = Mat(height / tileHeight, width / tileWidth, CV_32F);
 
     Mat boarder1 = planes[planeToCheck](cv::Rect(0, 0, tileWidth, height));
-    Mat boarder2 = planes[planeToCheck](cv::Rect(width-tileWidth, 0, tileWidth, height));
-    /*
-    imshow("Boarder1", boarder1);
-    imshow("Boarder2", boarder2);
-    moveWindow("Boarder1", 650, 100);
-    moveWindow("Boarder2", 750, 100);
-*/
+
     imshow("Plane", planes[planeToCheck]);
     moveWindow("Plane", 650, 500);
 
+    //goThroughScreenAndSave(height, width, tileHeight, tileWidth, boarder1, planes);
 
     for (int i = 0; i < (height / tileHeight) * tileHeight; i += tileHeight) {
         for (int j = 0; j < (width / tileWidth) * tileWidth; j += tileWidth) {
@@ -299,25 +317,53 @@ Mat getTiles(Mat screen, vector<Mat> sprites) {
             if (j == 0) block = boarder1(cv::Rect(j, i, tileWidth, tileHeight));
             else block = planes[planeToCheck](cv::Rect(j, i, tileWidth, tileHeight));
 
-            bool spriteFound = false;
-            for (int k = 0; k < sprites.size(); k++){
-                if (averageErrorBnW(sprites[k], block) < 500){
-                    spriteFound = true;
-                    if (k < 2) tiles.at<float>(i/tileHeight,j/tileWidth) = 0;   //Blank
-                    else if (k >= 2 && k < 6) tiles.at<float>(i/tileHeight,j/tileWidth) = 0.2; // Ghosts
-                    else if (k == 6 ) tiles.at<float>(i/tileHeight,j/tileWidth) = 0.4; // player
-                    else if (k >= 7 && k < 9) tiles.at<float>(i/tileHeight,j/tileWidth) = 0.6; // points
-                    else if (k >= 9 && k < 11) tiles.at<float>(i/tileHeight,j/tileWidth) = 0.8; // ExtraPoints
-                    else if (k >= 11) tiles.at<float>(i/tileHeight,j/tileWidth) = 1;  // Walls
 
+            bool spriteFound = false;
+            int mostSimilar = -1;
+            int aeBnW = 500000000;
+            for (int k = 0; k < sprites.size(); k++) {
+
+
+                if (averageErrorBnW(sprites[k], block) < aeBnW) {
+                    mostSimilar = k;
+                    aeBnW = averageErrorBnW(sprites[k], block);
+                    if (averageErrorBnW(sprites[k], block) < 500) {
+                        spriteFound = true;
+                    }
+                }
+                if (spriteFound || (k + 1) == sprites.size()) {
+
+                    if (mostSimilar < 0 || !spriteFound && aeBnW > 1000) {
+                        cout << "No sprite found!" << endl;
+                        cout << "AVERAGE ERROR" << aeBnW << "  :  " << mostSimilar << endl;
+                        cout << block << endl;
+                        cout << sprites[mostSimilar] << endl;
+                        imshow("BLOCK", block);
+                        waitKeyEx(25000);
+                        tiles.at<float>(i / tileHeight, j / tileWidth) = 8796;
+                    }
+                    else if (mostSimilar < 2) tiles.at<float>(i / tileHeight, j / tileWidth) = 0;   //Blank
+                    else if (mostSimilar >= 2 && mostSimilar < 7)
+                        tiles.at<float>(i / tileHeight, j / tileWidth) = 0.15; // Ghosts
+                    else if (mostSimilar == 7) tiles.at<float>(i / tileHeight, j / tileWidth) = 0.3; // player
+                    else if (mostSimilar >= 8 && mostSimilar < 10)
+                        tiles.at<float>(i / tileHeight, j / tileWidth) = 0.45; // points
+                    else if (mostSimilar >= 10 && mostSimilar < 12)
+                        tiles.at<float>(i / tileHeight, j / tileWidth) = 0.6; // ExtraPoints
+                    else if (mostSimilar >= 12 && mostSimilar < 14)
+                        tiles.at<float>(i / tileHeight, j / tileWidth) = 0.75; // ScaryGhosts
+                    else if (mostSimilar >= 14) tiles.at<float>(i / tileHeight, j / tileWidth) = 1;  // Walls
+                    continue;
                 }
             }
-            if (!spriteFound) tiles.at<float>(i/tileHeight,j/tileWidth) = 8796;
 
             //stringstream pictureName;
             //pictureName << "Tile" << j << "-" << i << ".bmp";
+            //cout << pictureName.str() << endl;
+            //imshow("Block", block);
             //imwrite(pictureName.str(), block);
-            //cout << "Erms: " << averageErrorBnW(block, block) << endl;
+            //cout << "Erms: " << averageErrorBnW(block, block) << block << endl;
+            //waitKeyEx(25000);
         }
     }
 
@@ -365,6 +411,7 @@ void getSprites(vector<Mat>& sprites, char* location){
 Mat scaleUp(Mat image, int scale){
     resize(image, image, image.size()*scale, scale, scale);   //resize image
     imshow("Tiles3", image);                   // Show our image inside it.
+    moveWindow("Tiles3", 650, 300);
     return image;
 }
 
@@ -393,11 +440,11 @@ int main( int argc, char** argv ) {
         Mat screen = getScreen();
 
         Mat tiles = getTiles(screen, sprites);
-
+        cout << tiles << endl;
         scaleUp(tiles, 20);
 
         // if pressed ESC it closes the program
-        if (waitKeyEx(250) == 27) {
+        if (waitKeyEx(25000) == 27) {
             return 0;
         }
     }
