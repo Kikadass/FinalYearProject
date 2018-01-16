@@ -14,6 +14,7 @@
 #include <opencv2/core/types.hpp>
 #include <sstream>
 #include "dirent.h"
+#include "include/Pool.h"
 #include <regex>
 
 using namespace std;
@@ -139,9 +140,17 @@ enum {
     kVK_UpArrow                   = 0x7E
 };
 
+
+
+
+
 // distance between point 1 and point 2
 double distance(double x1, double y1, double x2, double y2) {
     return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+}
+
+double sigmoid(double x){
+    return x / (1 + abs(x));
 }
 
 float averageErrorBnW(Mat& originalImage, Mat& image){
@@ -191,24 +200,39 @@ void pressKey(CGKeyCode keyCode){
 
 
 void pressButton(int i) {
-    sleep(1);
-    cout << "Starting" << endl;
     CGKeyCode button;
     switch (i){
         case 0:
-            button = kVK_ANSI_Q;
+            button = kVK_Escape;
+            cout << "Pressing ESC" << endl;
             break;
         case 1:
             button = kVK_DownArrow;
+            cout << "Pressing Down" << endl;
             break;
         case 2:
             button = kVK_UpArrow;
+            cout << "Pressing Up" << endl;
             break;
         case 3:
             button = kVK_LeftArrow;
+            cout << "Pressing Down" << endl;
             break;
         case 4:
             button = kVK_RightArrow;
+            cout << "Pressing Right" << endl;
+            break;
+        case 5:
+            button = kVK_Space;
+            cout << "Pressing Space" << endl;
+            break;
+        case 6:
+            button = kVK_Return;
+            cout << "Pressing Return" << endl;
+            break;
+        case 7:
+            button = kVK_F10;
+            cout << "Pressing Load State" << endl;
             break;
         default:
 
@@ -289,11 +313,12 @@ void goThroughScreenAndSave(int height, int width, int tileHeight, int tileWidth
     }
 }
 
-Mat getTiles(Mat screen, vector<Mat> sprites) {
+Mat getTiles(Mat screen, vector<Mat> sprites, int& originalNPoints, int& points) {
     int height = screen.rows;
     int width = screen.cols;
     int tileHeight = 24;
     int tileWidth = 32;
+    int nPoints = 0;
 
     // split in 3 planes RGB
     vector<Mat> planes;
@@ -349,16 +374,93 @@ Mat getTiles(Mat screen, vector<Mat> sprites) {
                     else if (mostSimilar >= 2 && mostSimilar < 7)
                         tiles.at<float>(i / tileHeight, j / tileWidth) = 0.15; // Ghosts
                     else if (mostSimilar == 7) tiles.at<float>(i / tileHeight, j / tileWidth) = 0.3; // player
-                    else if (mostSimilar >= 8 && mostSimilar < 10)
+                    else if (mostSimilar >= 8 && mostSimilar < 10) {
                         tiles.at<float>(i / tileHeight, j / tileWidth) = 0.45; // points
-                    else if (mostSimilar >= 10 && mostSimilar < 12)
+                        nPoints++;
+                    }
+                    else if (mostSimilar >= 10 && mostSimilar < 12) {
                         tiles.at<float>(i / tileHeight, j / tileWidth) = 0.6; // ExtraPoints
+                        nPoints += 5;
+                    }
                     else if (mostSimilar >= 12 && mostSimilar < 14)
                         tiles.at<float>(i / tileHeight, j / tileWidth) = 0.75; // ScaryGhosts
                     else if (mostSimilar >= 14) tiles.at<float>(i / tileHeight, j / tileWidth) = 1;  // Walls
                     continue;
                 }
             }
+        }
+    }
+
+    if (originalNPoints == -1) originalNPoints = nPoints;
+
+    points = originalNPoints - nPoints;
+
+    return tiles;
+}
+
+
+
+//create a map of the tiles by the averages of the colors in blocks
+Mat getAveragesColor(Mat screen) {
+    int height = screen.rows;
+    int width = screen.cols;
+    int tileHeight = 24;
+    int tileWidth = 32;
+
+    Mat tiles = Mat(height / tileHeight, width / tileWidth, CV_32S);
+
+    for (int i = 0; i < (height / tileHeight) * tileHeight; i += tileHeight) {
+        for (int j = 0; j < (width / tileWidth) * tileWidth; j += tileWidth) {
+
+            //get the sum of all the colors of the block in the 3 planes in order to get the average
+            float color = 0;
+            for (int k = 0; k < 3; k++) {
+                //get 8x8 block from image from (j,i) coordinates
+                Mat block;
+                block = screen(cv::Rect(j, i, tileWidth, tileHeight));
+
+                for (int x = 0; x < block.rows; x++){
+                    for (int y = 0; y < block.cols; y++){
+                        color += block.at<Vec3b>(x,y)[k];
+                    }
+                }
+            }
+
+            color /= (3.0f*(float)tileWidth*(float)tileHeight);
+            tiles.at<int>(i / tileHeight, j / tileWidth) = (int)color;
+        }
+    }
+
+    return tiles;
+}
+
+Mat getAveragesBnW(Mat screen) {
+    int height = screen.rows;
+    int width = screen.cols;
+    int tileHeight = 24;
+    int tileWidth = 32;
+    int planeSelected = 1;
+
+    Mat tiles = Mat(height / tileHeight, width / tileWidth, CV_32S);
+
+    for (int i = 0; i < (height / tileHeight) * tileHeight; i += tileHeight) {
+        for (int j = 0; j < (width / tileWidth) * tileWidth; j += tileWidth) {
+
+            //get the sum of all the colors of the block in the 3 planes in order to get the average
+            float color = 0;
+            //get 8x8 block from image from (j,i) coordinates
+            Mat block;
+            block = screen(cv::Rect(j, i, tileWidth, tileHeight));
+
+            for (int x = 0; x < block.rows; x++) {
+                for (int y = 0; y < block.cols; y++) {
+                    color += block.at<Vec3b>(x, y)[planeSelected];
+                }
+            }
+
+
+            color /= ((float) tileWidth * (float) tileHeight);
+            tiles.at<int>(i / tileHeight, j / tileWidth) = (int) color;
         }
     }
 
@@ -404,7 +506,7 @@ void getSprites(vector<Mat>& sprites, char* location){
 }
 
 Mat scaleUp(Mat image, int scale){
-    resize(image, image, image.size()*scale, scale, scale);   //resize image
+    resize(image, image, image.size()*scale, 0, 0, INTER_AREA);   //resize image
     imshow("Tiles3", image);                   // Show our image inside it.
     moveWindow("Tiles3", 650, 300);
     return image;
@@ -424,28 +526,88 @@ Mat scaleUp(Mat image, int scale){
 
 // size 21x14
 
+
+void startLoop(){
+    timeout = TIMEOUT_CONSTANT;
+
+    species[currentSpecies].getGenomes()[currentGenome].generateNetwork();
+    getButtonsToPress();
+}
+
+void getButtonsToPress(){
+    Genome genome = species[currentSpecies].getGenomes()[currentGenome];
+
+    inputs = getInputs();
+    controller = evaluateNetwork(genome.network, inputs)
+
+    /*
+    if (Left && right) {
+        //set both false
+    }
+    if (Up && Down){
+        // set both false
+    }
+     */
+}
+
+
 int main( int argc, char** argv ) {
+
+
     vector<Mat> sprites;
     char* startLocation = "../Images/";
     getSprites(sprites, startLocation);
 
-    sleep(2);
     //infinite Exit loop
-    while (1) {
-        Mat screen = getScreen();
+    while(1) {
+        bool dead = false;
+        int originalNPoints = -1;
+        int points = 0; // fitness
+        int timeout = 0;
 
-        Mat tiles = getTiles(screen, sprites);
-        cout << tiles << endl;
+        sleep(2);
+        pressButton(7);
+        sleep(1);
+        cout << "starting the game" << endl;
 
-        Mat saveTiles;
-        normalize(tiles, saveTiles, 0, 255, CV_MINMAX);
-        imwrite("TileMap.bmp", saveTiles);
+        while (!dead) {
+            Mat screen = getScreen();
 
-        scaleUp(tiles, 20);
+            //Mat tiles = getTiles(screen, sprites, originalNPoints, points);
+            Mat tiles = getAveragesBnW(screen);
+            cout << tiles << endl;
 
-        // if pressed ESC it closes the program
-        if (waitKeyEx(25000) == 27) {
-            return 0;
+            Mat saveTiles;
+            tiles.convertTo(tiles, CV_64FC1);
+
+            normalize(tiles, saveTiles, 0, 1, CV_MINMAX);
+            //imwrite("TileMap.bmp", tiles);
+            cout << saveTiles << endl;
+            scaleUp(saveTiles, 20);
+
+
+            // START OF AI
+
+            Pool pool;
+
+
+
+            //PRESS BUTTONS
+            if (results[0] <- 0.5)                      pressButton(1);
+            if (results[0] < 0 && results[0] >= -0.5)   pressButton(2);
+            if (results[0] < 0.5 && results[0] >= 0)    pressButton(3);
+            if (results[0] < 1 && results[0] >= 0.5)    pressButton(4);
+
+
+            // if pressed ESC it closes the program
+            if (waitKeyEx(250) == 27) {
+                return 0;
+            }
+
+            //TODO: detect both lifes. if there is only one, I died
+            if (false) {
+                dead = true;
+            }
         }
     }
 
@@ -453,6 +615,8 @@ int main( int argc, char** argv ) {
     int x;
     cin >> x;
 
+
+    /* SIMPLE AI
 
     srand(time(nullptr));
     //srand(0);
@@ -500,16 +664,11 @@ int main( int argc, char** argv ) {
 
         //Report how well the training is working. averaged over recent...
         cout << "Net recent average error: " << myNet.getRecentAverageError() << endl;
+    }
 
-
-/*
-        if (results[0] <- 0.5)                      pressButton(1);
-        if (results[0] < 0 && results[0] >= -0.5)   pressButton(2);
-        if (results[0] < 0.5 && results[0] >= 0)    pressButton(3);
-        if (results[0] < 1 && results[0] >= 0.5)    pressButton(4);
 */
 
-    }
+
 
     cout << "DONE" << endl;
 	putchar(getchar());
