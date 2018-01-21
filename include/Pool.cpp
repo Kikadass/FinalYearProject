@@ -13,7 +13,7 @@ int Pool::INPUT_SIZE = ScreenHeight*ScreenWidth;
 //number of buttons
 int Pool::OUTPUT_SIZE = 4;
 
-int Pool::POPULATION = 100;
+int Pool::POPULATION = 10;
 double Pool::DELTA_DISJOINT = 2.0;
 double Pool::DELTA_WEIGHTS = 0.4;
 double Pool::DELTA_THRESHOLD = 1.0;
@@ -42,8 +42,6 @@ Pool::Pool() {
     currentGenome = 0;
     currentFrame = 0;
     maxFitness = 0;
-
-//SETHBLINK
 
     for (int i = 0; i < Pool::POPULATION; i++) {
         Genome basic;
@@ -77,7 +75,7 @@ void Pool::removeStaleSpecies(int staleSpecies) {
     for (int s = 0; s < species.size(); s++) {
 
         // sort genomes in the species by fitness
-        vector<Genome> genomes = species[s].getGenomes();
+        vector<Genome> &genomes = species[s].getGenomes();
         sort(genomes.begin(), genomes.end(), isLhsFitnessBigger);
 
 
@@ -203,20 +201,19 @@ void Pool::nextGenome(){
 
     if (currentGenome == species[currentSpecies].getGenomes().size()) {
         currentSpecies++;
+        currentGenome = 0;
+
         if (currentSpecies == species.size()) {
             currentSpecies = 0;
+            // TODO:: mutate, crossover etc
         }
-        currentGenome = 0;
     }
-
 }
 
 
 
 //GETTERS
-vector<Species> Pool::getSpecies() {
-    return species;
-}
+
 
 int Pool::getGeneration() {
     return generation;
@@ -228,6 +225,10 @@ int Pool::getCurrentSpecies() {
 
 int Pool::getCurrentGenome() {
     return currentGenome;
+}
+
+vector<Species> &Pool::getSpecies() {
+    return species;
 }
 
 

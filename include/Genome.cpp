@@ -27,7 +27,11 @@ MutationRates Genome::getMutationRates(){
     return mutationRates;
 }
 
-int Genome::getMaxNeuron() const {
+const vector<Gene> &Genome::getGenes() const {
+    return genes;
+}
+
+int Genome::getMaxNeuron() {
     return maxNeuron;
 }
 
@@ -39,11 +43,12 @@ int Genome::getFitness() const {
     return fitness;
 }
 
-const vector<Gene> Genome::getGenes() const {
-    return genes;
+//SETTERS
+
+void Genome::setFitness(int fitness) {
+    Genome::fitness = fitness;
 }
 
-//SETTERS
 void Genome::setMaxNeuron(int maxNeuron) {
     Genome::maxNeuron = maxNeuron;
 }
@@ -203,9 +208,6 @@ void Genome::nodeMutate() {
 }
 
 
-
-
-
 void Genome::enableDisableMutate(bool enable) {
     vector<int> candidates;
     for (int i = 0; i < genes.size(); i++) {
@@ -303,8 +305,6 @@ void Genome::generateNetwork() {
 }
 
 
-
-
 int Genome::evaluateNetwork(vector<double> inputs) {
 
 
@@ -323,22 +323,22 @@ int Genome::evaluateNetwork(vector<double> inputs) {
 
     // go through the genes in each neuron and get the sum of the into.Neuron.values * the gene weight
     // use sigmoid function with the sum
-    for (int i = 0; i < network.size(); i++) {
+    for (map<int, Neuron2>::const_iterator i = network.begin(); i != network.end(); ++i) {
         int sum = 0;
-        for (int j = 0; j < network[i].getGenes().size(); i++) {
-            Gene gene = network[i].getGenes()[j];
+        for (int j = 0; j < network[i->first].getGenes().size(); j++) {
+            Gene gene = network[i->first].getGenes()[j];
             Neuron2 neuron = network[gene.getInto()];
             sum += gene.getWeight() * neuron.getValue();
         }
 
-        if (network[i].getGenes().size() > 0) {
+        if (network[i->first].getGenes().size() > 0) {
             //sigmoid function. set the value between 0 and 1
-            network[i].setValue(sum / (1 + abs(sum)));
+            network[i->first].setValue(sum / (1 + abs(sum)));
         }
     }
 
 
-    // TODO:: just choose the one with bigger value
+    // just choose the one with bigger value
     int pressed = -1;
     int maxValue = 0;
     cout << "Network size" << network.size() << endl;
@@ -376,3 +376,8 @@ int Genome::evaluateNetwork(vector<double> inputs) {
 
     return pressed;
 }
+
+
+
+
+

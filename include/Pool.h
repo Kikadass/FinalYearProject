@@ -50,7 +50,7 @@ public:
 
     Pool();
 
-    vector<Species> getSpecies();
+    vector<Species> &getSpecies();
 
     int getGeneration();
 

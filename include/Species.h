@@ -14,10 +14,10 @@ public:
     Species(vector<Genome> genomes);
 
     //GETTERS
+    vector<Genome> &getGenomes();
     int getAverageFitness() const;
     int getTopFitness() const;
     int getStaleness() const;
-    vector<Genome> getGenomes();
 
     //SETTERS
     void setTopFitness(int topFitness);

@@ -20,10 +20,10 @@ void Neuron2::setValue(double x) {
     value = x;
 }
 
-const vector<Gene> Neuron2::getGenes() {
+vector<Gene> &Neuron2::getGenes() {
     return genes;
 }
 
-double Neuron2::getValue() {
+const double Neuron2::getValue() const{
     return value;
 }

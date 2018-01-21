@@ -88,7 +88,7 @@ Genome Species::breedChild(int crossoverChance) {
     return child;
 }
 
-vector<Genome> Species::getGenomes() {
+vector<Genome> &Species::getGenomes() {
     return genomes;
 }
 

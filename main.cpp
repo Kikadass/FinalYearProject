@@ -288,13 +288,11 @@ Mat getScreen(){
 
 // function created to go through the screen plane 2 (Blue) and save manually selected blocks
 // Press ESC to save that block or any other button to continue without saving
-void goThroughScreenAndSave(int height, int width, int tileHeight, int tileWidth, Mat boarder1, vector<Mat> planes){
-    for (int i = 0; i < (height / tileHeight) * tileHeight; i += tileHeight) {
-        for (int j = 0; j < (width / tileWidth) * tileWidth - tileWidth; j++) {
+void goThroughScreenAndSave(int height, int width, int tileHeight, int tileWidth, vector<Mat> planes){
+    for (int i = 15*tileHeight+1; i < (height / tileHeight) * tileHeight; i += tileHeight) {
+        for (int j = (width / tileWidth) * tileWidth - tileWidth*8-6; j > 0 ; j -= tileWidth) {
             //get 8x8 block from image from (j,i) coordinates
-            Mat block;
-            if (j == 0) block = boarder1(cv::Rect(j, i, tileWidth, tileHeight));
-            else block = planes[2](cv::Rect(j, i, tileWidth, tileHeight));
+            Mat block = planes[2](cv::Rect(j, i, tileWidth, tileHeight));
 
             //stringstream pictureName;
             //pictureName << "Ghost1.bmp";
@@ -365,6 +363,7 @@ Mat getTiles(Mat screen, vector<Mat> sprites, int& originalNPoints, int& points)
                         imshow("BLOCK", block);
                         waitKeyEx(25000);
                          */
+
                         tiles.at<float>(i / tileHeight, j / tileWidth) = 0.9;
                     }
                     else if (mostSimilar < 2) tiles.at<float>(i / tileHeight, j / tileWidth) = 0;   //Blank
@@ -393,6 +392,71 @@ Mat getTiles(Mat screen, vector<Mat> sprites, int& originalNPoints, int& points)
     points = originalNPoints - nPoints;
 
     return tiles;
+}
+
+int getFitness(Mat screen, vector<Mat> sprites) {
+    int height = screen.rows;
+    int width = screen.cols;
+    int tileHeight = 24;
+    int tileWidth = 32;
+    int fitness = 0;
+
+    // split in 3 planes RGB
+    vector<Mat> planes;
+    split(screen, planes);
+
+    int planeToCheck = 2;
+
+    //variable that sets units, teens, hundreds, thousands.... for the fitness
+    int mult = -1;
+
+
+    // start from the right to the left reading the fitness in th screen
+    for (int i = 15*tileHeight+1; i < (height / tileHeight) * tileHeight; i += tileHeight) {
+        for (int j = (width / tileWidth) * tileWidth - tileWidth*8-6; j > 0 ; j -= tileWidth) {
+            mult++;
+
+            //get 8x8 block from image from (j,i) coordinates
+            Mat block = planes[planeToCheck](cv::Rect(j, i, tileWidth, tileHeight));
+
+
+            bool spriteFound = false;
+            int mostSimilar = -1;
+            int aeBnW = 500000000;
+
+            for (int k = 0; k < sprites.size(); k++) {
+
+                if (averageErrorBnW(sprites[k], block) < aeBnW) {
+                    mostSimilar = k;
+                    aeBnW = averageErrorBnW(sprites[k], block);
+
+                    // if aeBnW is less than 200 it is assumed that it is the correct sprite
+                    if (aeBnW < 200) {
+                        spriteFound = true;
+                    }
+                }
+
+                // if the spritez array has gonne through
+                if (spriteFound || (k + 1) == sprites.size()) {
+                    if (mostSimilar < 0 || !spriteFound && aeBnW > 1000) {
+
+                        cout << "No sprite found!" << endl;
+                        cout << "AVERAGE ERROR" << aeBnW << "  :  " << mostSimilar << endl;
+                        cout << block << endl;
+                        cout << sprites[mostSimilar] << endl;
+                        return fitness;
+                    }
+
+                    else {
+                        fitness += mostSimilar*pow(10, mult);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    return fitness;
 }
 
 
@@ -527,7 +591,7 @@ int main( int argc, char** argv ) {
 
 
     vector<Mat> sprites;
-    char* startLocation = "../Images/";
+    char* startLocation = "../Images/fitness/";
     getSprites(sprites, startLocation);
 
     //infinite Exit loop
@@ -550,7 +614,6 @@ int main( int argc, char** argv ) {
         while (!dead) {
 
             Mat screen = getScreen();
-            // TODO:: GET FITNESS
 
             //Mat tiles = getTiles(screen, sprites, originalNPoints, points);
             Mat tiles = getAveragesBnW(screen);
@@ -560,7 +623,11 @@ int main( int argc, char** argv ) {
 
             //check if player has died.  The values for the lives are between 40 and 70. if is less than that, there is no live in that tile
             if (tiles.at<double>(tiles.rows-2, 3) < 30){
+                int fitness = getFitness(screen, sprites);
                 dead = true;
+                pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()].setFitness(fitness);
+
+                continue;
             }
 
             // convert values between 0 and 1 being 1 255
@@ -599,6 +666,7 @@ int main( int argc, char** argv ) {
             }
 
         }
+
         pool.nextGenome();
     }
 

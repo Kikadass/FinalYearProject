@@ -24,14 +24,15 @@ public:
     Genome();
 
     //GETTERS
+    const vector<Gene> &getGenes() const;
     int getGlobalRank();
-    const vector<Gene> getGenes() const;
     int getFitness() const;
-    int getMaxNeuron() const;
+    int getMaxNeuron();
     MutationRates getMutationRates();
 
     //SETTERS
     void addGene(Gene g);
+    void setFitness(int fitness);
     void setMaxNeuron(int maxNeuron);
     void copyMutationRates(MutationRates mR);
     void mutate();

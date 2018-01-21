@@ -14,8 +14,8 @@ public:
     void addGene(Gene gene);
     void setValue(double x);
     //GETTERS
-    double getValue();
-    const vector<Gene> getGenes();
+    const double getValue() const;
+    vector<Gene> &getGenes();
 
 private:
     double value;
