@@ -598,13 +598,6 @@ int main( int argc, char** argv ) {
                 dead = true;
             }
 
-
-
-
-            //TODO: detect both lifes. if there is only one, I died
-            if (false) {
-                dead = true;
-            }
         }
         pool.nextGenome();
     }

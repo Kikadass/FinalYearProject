@@ -341,7 +341,7 @@ int Genome::evaluateNetwork(vector<double> inputs) {
     // TODO:: just choose the one with bigger value
     int pressed = -1;
     int maxValue = 0;
-    cout << network.size();
+    cout << "Network size" << network.size() << endl;
     for (int i = 0; i < Pool::OUTPUT_SIZE; i++) {
         cout << network[Pool::MaxNodes + i].getValue() << " : " << maxValue << " = " << (network[Pool::MaxNodes + i].getValue() > maxValue) << endl;
         if (network[Pool::MaxNodes + i].getValue() > maxValue) {
