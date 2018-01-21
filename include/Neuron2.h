@@ -10,12 +10,16 @@
 class Neuron2 {
 public:
     Neuron2();
+    //SETTERS
     void addGene(Gene gene);
     void setValue(double x);
+    //GETTERS
+    double getValue();
+    const vector<Gene> getGenes();
 
 private:
-    vector<Gene> genes;
     double value;
+    vector<Gene> genes;
 
 
     double randomWeight();

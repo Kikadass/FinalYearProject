@@ -4,6 +4,7 @@
 
 #include "Genome.h"
 #include "Pool.h"
+bool Debug = false;
 
 Genome::Genome(){
     genes;
@@ -65,14 +66,18 @@ void Genome::mutate() {
     mutationRates.step *= ((rand()%2 == 1) ? 0.95 : 1.05263);
 
     //TODO: CHECK mutationRates values:
-    cout << "connections" << mutationRates.connections << endl;
-    cout << "link" << mutationRates.link << endl;
-    cout << "bias" << mutationRates.bias << endl;
-    cout << "node" << mutationRates.node << endl;
-    cout << "enable" << mutationRates.enable << endl;
-    cout << "disable" << mutationRates.disable << endl;
-    cout << "step" << mutationRates.step << endl;
-    cout << "random" << (rand()%11)/10 << endl;
+
+    if (Debug) {
+        cout << endl << endl << "MUTATE!" << endl;
+        cout << "connections: " << mutationRates.connections << endl;
+        cout << "link: " << mutationRates.link << endl;
+        cout << "bias: " << mutationRates.bias << endl;
+        cout << "node: " << mutationRates.node << endl;
+        cout << "enable: " << mutationRates.enable << endl;
+        cout << "disable: " << mutationRates.disable << endl;
+        cout << "step: " << mutationRates.step << endl;
+        cout << "random: " << (rand() % 11) / 10 << endl;
+    }
 
     if ((rand()%11)/10 < mutationRates.connections) {
         pointMutate();
@@ -121,12 +126,18 @@ void Genome::linkMutate(bool forceBias) {
     double weight;
     bool enabled = true;
 
+    cout << "Both neurons are input neurons: " << neuron1 << " : " << neuron2 << endl;
     if (neuron1 <= Pool::INPUT_SIZE && neuron2 <= Pool::INPUT_SIZE) {
         //Both input nodes
+        cout << "No new gene created" << endl;
+
         return;
     }
+
+    cout << "New gene created!" << endl;
+
     if (neuron2 <= Pool::INPUT_SIZE) {
-        // Swap output and input
+        // Swap output and input to have the lowest number in neuron1
         int temp = neuron1;
         neuron1 = neuron2;
         neuron2 = temp;
@@ -171,7 +182,8 @@ void Genome::nodeMutate() {
 
     Gene gene = genes[rand() % genes.size()];
     if (!gene.isEnabled())  return;
-    gene.setEnabled(false);
+
+    genes[rand() % genes.size()].setEnabled(false);
 
 
     //Create  gene1 that gets gene as input
@@ -195,39 +207,53 @@ void Genome::nodeMutate() {
 
 
 void Genome::enableDisableMutate(bool enable) {
-    vector<Gene> candidates;
+    vector<int> candidates;
     for (int i = 0; i < genes.size(); i++) {
-        if (genes[i].isEnabled() == !enable) candidates.push_back(genes[i]);
+        if (genes[i].isEnabled() == !enable) candidates.push_back(i);
     }
 
     if (candidates.size() == 0) return;
 
-    Gene gene = candidates[rand() % candidates.size()];
-    gene.setEnabled(!gene.isEnabled());
+
+    int random = candidates[rand() % candidates.size()];
+    genes[random].setEnabled(!genes[random].isEnabled());
 }
 
 
 // count all the neurons there is and give a random index of all neurons
 // if there are no genes it will still return a random number between the inputs and the outputs
 int Genome::randomNeuron(bool isInput) {
-    int neurons = 0;
-    if (isInput) {
-        neurons = Pool::INPUT_SIZE;
+    map<int, bool> neurons;
+
+    // put into neurons the inputSize + the bias
+    for (int i = 0; i <= Pool::INPUT_SIZE; i++){
+        neurons[i] = true;
     }
 
-    neurons += Pool::OUTPUT_SIZE;
-
-
-    for (int i = 0; i < genes.size(); i++){
-        if (isInput) neurons += 2;
-        else {
-            if(genes[i].getInto() > Pool::INPUT_SIZE) neurons++;
-            if(genes[i].getOut() > Pool::INPUT_SIZE) neurons++;
+    if (!isInput) {
+        for (int i = 0; i <= Pool::OUTPUT_SIZE; i++){
+            neurons[maxNeuron + i] = true;
         }
     }
 
+    // add genes' neurons and avoid the output ones if we are looking only for input neurons
+    for (int i = 0; i < genes.size(); i++){
+        if (isInput || genes[i].getInto() < Pool::OUTPUT_SIZE) {
+            neurons[genes[i].getInto()] = true;
+        }
+        if (isInput || genes[i].getOut() < Pool::OUTPUT_SIZE) {
+            neurons[genes[i].getOut()] = true;
+        }
+    }
 
-    return int(rand() % neurons);
+    int counter = 0;
+    for (int i = 0; i < neurons.size(); i++){
+        if (neurons[i]){
+            counter++;
+        }
+    }
+
+    return rand() % counter;
 }
 
 
@@ -235,6 +261,9 @@ void Genome::firstGenome() {
     maxNeuron = Pool::INPUT_SIZE;
     mutate();
 }
+
+
+bool isRhsOutBigger(const Gene a, const Gene b) { return a.getOut() < b.getOut() ; }
 
 void Genome::generateNetwork() {
 
@@ -255,7 +284,10 @@ void Genome::generateNetwork() {
 
         if (genes[i].isEnabled()) {
             // neuron is not in the map create neuron
-            if (network[genes[i].getOut()] == -1){
+            auto x = network.find(genes[i].getOut())->second;
+            cout << "Getting neurons!" << endl;
+            cout << (x.getValue() == -1) << endl;
+            if (x.getValue() == -1){
                 network[genes[i].getOut()] = Neuron2();
             }
 
@@ -263,7 +295,7 @@ void Genome::generateNetwork() {
             network[genes[i].getOut()].addGene(genes[i]);
 
             // if input neuron does not exist, create it
-            if (network[genes[i].getInto()] == -1) {
+            if (network[genes[i].getInto()].getValue() == -1) {
                 network[genes[i].getInto()] = Neuron2();
             }
         }
@@ -273,6 +305,74 @@ void Genome::generateNetwork() {
 
 
 
-bool isRhsOutBigger(const Gene a, const Gene b) { return a.getOut() < b.getOut() ; }
+int Genome::evaluateNetwork(vector<double> inputs) {
 
 
+    if (inputs.size() != Pool::INPUT_SIZE) {
+        cout << "INCORRECT NUMBER OF INPUTS" << endl;
+        cout << "Inputs expected: " << Pool::INPUT_SIZE << endl;
+        cout << "Inputs received: " << inputs.size() << endl;
+        return -1;
+    }
+
+    // inputting the tile values into the "input layer"
+    for (int i = 0; i < Pool::INPUT_SIZE; i++) {
+        network[i].setValue(inputs[i]);
+    }
+
+
+    // go through the genes in each neuron and get the sum of the into.Neuron.values * the gene weight
+    // use sigmoid function with the sum
+    for (int i = 0; i < network.size(); i++) {
+        int sum = 0;
+        for (int j = 0; j < network[i].getGenes().size(); i++) {
+            Gene gene = network[i].getGenes()[j];
+            Neuron2 neuron = network[gene.getInto()];
+            sum += gene.getWeight() * neuron.getValue();
+        }
+
+        if (network[i].getGenes().size() > 0) {
+            //sigmoid function. set the value between 0 and 1
+            network[i].setValue(sum / (1 + abs(sum)));
+        }
+    }
+
+
+    // TODO:: just choose the one with bigger value
+    int pressed = -1;
+    int maxValue = 0;
+    cout << network.size();
+    for (int i = 0; i < Pool::OUTPUT_SIZE; i++) {
+        cout << network[Pool::MaxNodes + i].getValue() << " : " << maxValue << " = " << (network[Pool::MaxNodes + i].getValue() > maxValue) << endl;
+        if (network[Pool::MaxNodes + i].getValue() > maxValue) {
+            maxValue = network[Pool::MaxNodes + i].getValue();
+            pressed = i+1;
+        }
+    }
+
+
+    //check which buttons are true and which ara false
+
+    /*
+    int anyPressed = false;
+    for (int i = 0; i < Pool::OUTPUT_SIZE; i++) {
+        if (network[Pool::MaxNodes + i].getValue() > 0.5) {
+            //Down up left right
+
+            // Avoid having more then 1 button true
+            if (anyPressed){
+                anyPressed = false;
+                pressed = -1;
+                break;
+            }
+            else{
+                anyPressed = true;
+                pressed = i+1;
+            }
+        }
+    }
+
+    */
+
+    return pressed;
+}

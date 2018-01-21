@@ -5,7 +5,7 @@
 #include "Neuron2.h"
 
 Neuron2::Neuron2() {
-    Neuron2::value = 0;
+    Neuron2::value = -1;
 }
 
 void Neuron2::addGene(Gene gene){
@@ -18,4 +18,12 @@ double Neuron2::randomWeight(){
 
 void Neuron2::setValue(double x) {
     value = x;
+}
+
+const vector<Gene> Neuron2::getGenes() {
+    return genes;
+}
+
+double Neuron2::getValue() {
+    return value;
 }

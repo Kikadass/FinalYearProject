@@ -10,11 +10,11 @@
 class Pool {
 private:
     vector<Species> species;
-    int generation = 0;
-    int currentSpecies = 1;
-    int currentGenome = 1;
-    int currentFrame = 0;
-    int maxFitness = 0;
+    int generation;
+    int currentSpecies;
+    int currentGenome;
+    int currentFrame;
+    int maxFitness;
 
 public:
     static int ScreenHeight;
@@ -50,6 +50,14 @@ public:
 
     Pool();
 
+    vector<Species> getSpecies();
+
+    int getGeneration();
+
+    int getCurrentSpecies();
+
+    int getCurrentGenome();
+
     int calculateFitness();
 
     void removeStaleSpecies(int StaleSpecies);
@@ -64,7 +72,7 @@ public:
 
     double weights(vector<Gene> genes1, vector<Gene> genes2);
 
-    void startLoop();
+    void nextGenome();
 };
 
 

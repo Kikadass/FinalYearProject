@@ -202,10 +202,6 @@ void pressKey(CGKeyCode keyCode){
 void pressButton(int i) {
     CGKeyCode button;
     switch (i){
-        case 0:
-            button = kVK_Escape;
-            cout << "Pressing ESC" << endl;
-            break;
         case 1:
             button = kVK_DownArrow;
             cout << "Pressing Down" << endl;
@@ -216,7 +212,7 @@ void pressButton(int i) {
             break;
         case 3:
             button = kVK_LeftArrow;
-            cout << "Pressing Down" << endl;
+            cout << "Pressing Left" << endl;
             break;
         case 4:
             button = kVK_RightArrow;
@@ -235,7 +231,8 @@ void pressButton(int i) {
             cout << "Pressing Load State" << endl;
             break;
         default:
-
+            cout << "ERROR: Wrong Button pressed!  -> " << i << endl;
+            return;
             break;
     }
 
@@ -526,31 +523,6 @@ Mat scaleUp(Mat image, int scale){
 
 // size 21x14
 
-
-void startLoop(){
-    timeout = TIMEOUT_CONSTANT;
-
-    species[currentSpecies].getGenomes()[currentGenome].generateNetwork();
-    getButtonsToPress();
-}
-
-void getButtonsToPress(){
-    Genome genome = species[currentSpecies].getGenomes()[currentGenome];
-
-    inputs = getInputs();
-    controller = evaluateNetwork(genome.network, inputs)
-
-    /*
-    if (Left && right) {
-        //set both false
-    }
-    if (Up && Down){
-        // set both false
-    }
-     */
-}
-
-
 int main( int argc, char** argv ) {
 
 
@@ -563,57 +535,79 @@ int main( int argc, char** argv ) {
         bool dead = false;
         int originalNPoints = -1;
         int points = 0; // fitness
-        int timeout = 0;
+        int timeout = Pool::TIMEOUT_CONSTANT;
 
         sleep(2);
         pressButton(7);
         sleep(1);
-        cout << "starting the game" << endl;
+        cout << "Starting the game" << endl;
+
+        Pool pool;
+        cout << "Generating Network!" << endl;
+        pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()].generateNetwork();
+
 
         while (!dead) {
+
             Mat screen = getScreen();
+            // TODO:: GET FITNESS
 
             //Mat tiles = getTiles(screen, sprites, originalNPoints, points);
             Mat tiles = getAveragesBnW(screen);
-            cout << tiles << endl;
 
-            Mat saveTiles;
             tiles.convertTo(tiles, CV_64FC1);
 
-            normalize(tiles, saveTiles, 0, 1, CV_MINMAX);
+
+            //check if player has died.  The values for the lives are between 40 and 70. if is less than that, there is no live in that tile
+            if (tiles.at<double>(tiles.rows-2, 3) < 30){
+                dead = true;
+            }
+
+            // convert values between 0 and 1 being 1 255
+
+            tiles /= 255;
+
+
             //imwrite("TileMap.bmp", tiles);
-            cout << saveTiles << endl;
+
+            Mat saveTiles = tiles;
             scaleUp(saveTiles, 20);
 
 
             // START OF AI
+            //create array of inputs
+            vector<double> inputs;
 
-            Pool pool;
+            cout << "START OF THE AI" << endl;
+            for (int i = 0; i < tiles.rows; i++){
+                for (int j = 0; j < tiles.cols; j++){
+                    double tile = tiles.at<double>(i, j);
+                    inputs.push_back(tile);
+                }
+            }
 
+            int buttonToPress = pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()].evaluateNetwork(inputs);
+            pressButton(buttonToPress);
 
-
-            //PRESS BUTTONS
-            if (results[0] <- 0.5)                      pressButton(1);
-            if (results[0] < 0 && results[0] >= -0.5)   pressButton(2);
-            if (results[0] < 0.5 && results[0] >= 0)    pressButton(3);
-            if (results[0] < 1 && results[0] >= 0.5)    pressButton(4);
-
-
+            int keyPressed = waitKeyEx(250);
             // if pressed ESC it closes the program
-            if (waitKeyEx(250) == 27) {
+            if (keyPressed == 27) {
                 return 0;
             }
+            else if (keyPressed == 32){     // pressed space
+                dead = true;
+            }
+
+
+
 
             //TODO: detect both lifes. if there is only one, I died
             if (false) {
                 dead = true;
             }
         }
+        pool.nextGenome();
     }
-
-
-    int x;
-    cin >> x;
 
 
     /* SIMPLE AI

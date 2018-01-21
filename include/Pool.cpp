@@ -5,7 +5,7 @@
 #include "Pool.h"
 
 
-int Pool::ScreenHeight = 14;
+int Pool::ScreenHeight = 16;
 int Pool::ScreenWidth = 20;
 
 int Pool::INPUT_SIZE = ScreenHeight*ScreenWidth;
@@ -13,7 +13,7 @@ int Pool::INPUT_SIZE = ScreenHeight*ScreenWidth;
 //number of buttons
 int Pool::OUTPUT_SIZE = 4;
 
-int Pool::POPULATION = 300;
+int Pool::POPULATION = 100;
 double Pool::DELTA_DISJOINT = 2.0;
 double Pool::DELTA_WEIGHTS = 0.4;
 double Pool::DELTA_THRESHOLD = 1.0;
@@ -50,9 +50,6 @@ Pool::Pool() {
         basic.firstGenome();
         addToSpecies(basic);
     }
-
-    startLoop();
-
 }
 
 int Pool::calculateFitness() {
@@ -118,11 +115,15 @@ void Pool::removeWeakSpecies(int population) {
 bool Pool::sameSpecies(Genome genome1, Genome genome2) {
     double dd = DELTA_DISJOINT * disjoint(genome1.getGenes(), genome2.getGenes());
     double dw = DELTA_WEIGHTS * weights(genome1.getGenes(), genome2.getGenes());
-    return dd + dw < DELTA_THRESHOLD;
+    return (dd + dw) < DELTA_THRESHOLD;
 }
 
 
 double Pool::disjoint(vector<Gene> genes1, vector<Gene> genes2) {
+    if (genes1.size() == 0 && genes2.size() == 0){
+        return 0;
+    }
+
     map<int, bool> i1;
     for (int i = 0; i < genes1.size(); i++) {
         i1[genes1[i].getInnovation()] = true;
@@ -152,6 +153,9 @@ double Pool::disjoint(vector<Gene> genes1, vector<Gene> genes2) {
 }
 
 double Pool::weights(vector<Gene> genes1, vector<Gene> genes2) {
+    if (genes1.size() == 0 && genes2.size() == 0){
+        return 0;
+    }
 
     map<int, Gene> i2;
     for (int i = 0; i < genes2.size(); i++) {
@@ -163,21 +167,24 @@ double Pool::weights(vector<Gene> genes1, vector<Gene> genes2) {
     for (int i = 0; i < genes1.size(); i++) {
         if (i2.count(genes1[i].getInnovation()) == 0){
             sum = sum + abs(genes1[i].getWeight() - i2[genes1[i].getInnovation()].getWeight());
-            coincident = coincident + 1;
+            coincident++;
         }
     }
+
+    if (coincident == 0) coincident = 1;
 
     return sum / coincident;
 }
 
 
-
 void Pool::addToSpecies(Genome child) {
+    cout << "Adding child to Species" << endl;
     bool foundSpecies = false;
 
     for (int s = 0; s < species.size(); s++) {
-        if (!foundSpecies && sameSpecies(child, species[s].getGenomes()[1])) {
+        if (!foundSpecies && sameSpecies(child, species[s].getGenomes()[0])) {
             species[s].addChild(child);
+
             foundSpecies = true;
         }
     }
@@ -190,45 +197,38 @@ void Pool::addToSpecies(Genome child) {
     }
 }
 
+void Pool::nextGenome(){
 
+    currentGenome++;
 
-vector<double> Pool::evaluateNetwork(vector<double> inputs){
-    Pool pool;
-    Species species;
-    Genome genome;
+    if (currentGenome == species[currentSpecies].getGenomes().size()) {
+        currentSpecies++;
+        if (currentSpecies == species.size()) {
+            currentSpecies = 0;
+        }
+        currentGenome = 0;
+    }
 
-//table.insert(inputs, 1)
-if (inputs.size() != Pool::INPUT_SIZE) {
-    cout << "INCORRECT NUMBER OF INPUTS" << endl;
-    return;
 }
 
-for (int i = 0; i < Pool::INPUT_SIZE; i++) {
-    network.neurons[i].value = inputs[i];
+
+
+//GETTERS
+vector<Species> Pool::getSpecies() {
+    return species;
 }
 
-for ,neuron in pairs(network.neurons) do
-local sum = 0
-for j = 1,#neuron.incoming do
-local incoming = neuron.incoming[j]
-local other = network.neurons[incoming.into]
-sum = sum + incoming.weight * other.value
-end
+int Pool::getGeneration() {
+    return generation;
+}
 
-if #neuron.incoming > 0 then
-        neuron.value = sigmoid(sum)
-end
-        end
+int Pool::getCurrentSpecies() {
+    return currentSpecies;
+}
 
-local outputs = {}
-for o=1,Outputs do
-local button = "P1 " .. ButtonNames[o]
-if network.neurons[MaxNodes+o].value > 0 then
-        outputs[button] = true
-else
-outputs[button] = false
-end
-        end
+int Pool::getCurrentGenome() {
+    return currentGenome;
+}
 
-return outputs
-        end
+
+

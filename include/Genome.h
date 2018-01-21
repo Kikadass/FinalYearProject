@@ -39,6 +39,7 @@ public:
     void linkMutate(bool forceBias);
     void firstGenome();
     void generateNetwork();
+    int evaluateNetwork(vector<double> inputs);
 
 
 private:
@@ -57,7 +58,6 @@ private:
     int randomNeuron(bool nonInput);
 
     bool containsLink(Gene link);
-
 };
 
 
