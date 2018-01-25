@@ -53,6 +53,10 @@ void Genome::setMaxNeuron(int maxNeuron) {
     Genome::maxNeuron = maxNeuron;
 }
 
+void Genome::setGlobalRank(int globalRank) {
+    Genome::globalRank = globalRank;
+}
+
 void Genome::copyMutationRates(MutationRates mR){
     mutationRates = mR;
 }
@@ -131,15 +135,15 @@ void Genome::linkMutate(bool forceBias) {
     double weight;
     bool enabled = true;
 
-    cout << "Both neurons are input neurons: " << neuron1 << " : " << neuron2 << endl;
     if (neuron1 <= Pool::INPUT_SIZE && neuron2 <= Pool::INPUT_SIZE) {
         //Both input nodes
-        cout << "No new gene created" << endl;
+        // cout << "No new gene created" << endl;
 
         return;
     }
 
     cout << "New gene created!" << endl;
+    cout << "Both neurons: " << neuron1 << " : " << neuron2 << endl;
 
     if (neuron2 <= Pool::INPUT_SIZE) {
         // Swap output and input to have the lowest number in neuron1
@@ -341,7 +345,8 @@ int Genome::evaluateNetwork(vector<double> inputs) {
     // just choose the one with bigger value
     int pressed = -1;
     int maxValue = 0;
-    cout << "Network size" << network.size() << endl;
+
+    cout << "Network size: " << network.size() << endl;
     for (int i = 0; i < Pool::OUTPUT_SIZE; i++) {
         cout << network[Pool::MaxNodes + i].getValue() << " : " << maxValue << " = " << (network[Pool::MaxNodes + i].getValue() > maxValue) << endl;
         if (network[Pool::MaxNodes + i].getValue() > maxValue) {
@@ -376,6 +381,8 @@ int Genome::evaluateNetwork(vector<double> inputs) {
 
     return pressed;
 }
+
+
 
 
 

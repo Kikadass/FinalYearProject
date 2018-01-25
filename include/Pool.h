@@ -60,9 +60,9 @@ public:
 
     int calculateFitness();
 
-    void removeStaleSpecies(int StaleSpecies);
+    void removeStaleSpecies();
 
-    void removeWeakSpecies(int population);
+    void removeWeakSpecies();
 
     void addToSpecies(Genome child);
 
@@ -73,6 +73,14 @@ public:
     double weights(vector<Gene> genes1, vector<Gene> genes2);
 
     void nextGenome();
+
+    void newGeneration();
+
+    int poolAverageFitness();
+
+    void cullSpecies(bool cutToOne);
+
+    void rankGlobally();
 };
 
 

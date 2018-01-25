@@ -3,6 +3,7 @@
 //
 
 #include "Species.h"
+#include "Pool.h"
 
 Species::Species(vector<Genome> genomes) {
     topFitness = 0;
@@ -11,25 +12,49 @@ Species::Species(vector<Genome> genomes) {
     Species::genomes = genomes;
 }
 
+//GETTERS
+int Species::getStaleness() const {
+    return staleness;
+}
+
+int Species::getAverageFitness() const {
+    return averageFitness;
+}
+
+vector<Genome> &Species::getGenomes() {
+    return genomes;
+}
+
+int Species::getTopFitness() const {
+    return topFitness;
+}
+
+
+
+//SETTERS
+void Species::setTopFitness(int topFitness) {
+    Species::topFitness = topFitness;
+}
+
+void Species::setStaleness(int staleness) {
+    Species::staleness = staleness;
+}
+
 void Species::calculateFitness() {
     int total = 0;
     int max = 0;
 
     for (int g = 0; g < genomes.size(); g++) {
-        int genomeRank = genomes[g].getGlobalRank();
+        int fitness = genomes[g].getFitness();
 
-        if (genomeRank > max) max = genomeRank;
+        if (fitness > max) max = fitness;
 
-        total += genomeRank;
+        total += fitness;
     }
 
     topFitness = max;
 
     averageFitness = total / genomes.size();
-}
-
-int Species::getAverageFitness() const {
-    return averageFitness;
 }
 
 Genome Species::crossover(Genome g1, Genome g2) {
@@ -69,10 +94,10 @@ Genome Species::crossover(Genome g1, Genome g2) {
     return child;
 }
 
-Genome Species::breedChild(int crossoverChance) {
+Genome Species::breedChild() {
     Genome child;
 
-    if (rand()%101 < crossoverChance) {
+    if (rand()%101 < Pool::CrossoverChance) {
         Genome g1 = genomes[rand()%genomes.size()];
         Genome g2 = genomes[rand()%genomes.size()];
         child = crossover(g1, g2);
@@ -88,26 +113,8 @@ Genome Species::breedChild(int crossoverChance) {
     return child;
 }
 
-vector<Genome> &Species::getGenomes() {
-    return genomes;
-}
-
-int Species::getTopFitness() const {
-    return topFitness;
-}
-
-void Species::setTopFitness(int topFitness) {
-    Species::topFitness = topFitness;
-}
-
-void Species::setStaleness(int staleness) {
-    Species::staleness = staleness;
-}
-
-int Species::getStaleness() const {
-    return staleness;
-}
-
 void Species::addChild(Genome child){
     genomes.push_back(child);
 }
+
+

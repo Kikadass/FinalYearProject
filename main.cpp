@@ -438,12 +438,18 @@ int getFitness(Mat screen, vector<Mat> sprites) {
 
                 // if the spritez array has gonne through
                 if (spriteFound || (k + 1) == sprites.size()) {
-                    if (mostSimilar < 0 || !spriteFound && aeBnW > 1000) {
 
+                    // if it does not detect any of the numbers, it found a blank tile, so it has finished reading the fitness
+                    if (mostSimilar < 0 || !spriteFound && aeBnW > 1000) {
+                        /*
                         cout << "No sprite found!" << endl;
                         cout << "AVERAGE ERROR" << aeBnW << "  :  " << mostSimilar << endl;
                         cout << block << endl;
+                        imshow("BLOCK", block);
+                        waitKeyEx(40000);
                         cout << sprites[mostSimilar] << endl;
+                         */
+
                         return fitness;
                     }
 
@@ -593,6 +599,7 @@ int main( int argc, char** argv ) {
     vector<Mat> sprites;
     char* startLocation = "../Images/fitness/";
     getSprites(sprites, startLocation);
+    Pool pool;
 
     //infinite Exit loop
     while(1) {
@@ -606,7 +613,6 @@ int main( int argc, char** argv ) {
         sleep(1);
         cout << "Starting the game" << endl;
 
-        Pool pool;
         cout << "Generating Network!" << endl;
         pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()].generateNetwork();
 
@@ -621,7 +627,7 @@ int main( int argc, char** argv ) {
             tiles.convertTo(tiles, CV_64FC1);
 
 
-            //check if player has died.  The values for the lives are between 40 and 70. if is less than that, there is no live in that tile
+            //check if player has died.  The Blue values for the lives are between 40 and 70. if is less than that, there is no live in that tile
             if (tiles.at<double>(tiles.rows-2, 3) < 30){
                 int fitness = getFitness(screen, sprites);
                 dead = true;
@@ -645,7 +651,8 @@ int main( int argc, char** argv ) {
             //create array of inputs
             vector<double> inputs;
 
-            cout << "START OF THE AI" << endl;
+            cout << endl << "START OF THE AI" << endl;
+            cout << "Current Generation: " << pool.getGeneration() << "  Current Species: " << pool.getCurrentSpecies() << "  Current Genome: " << pool.getCurrentGenome() << endl;
             for (int i = 0; i < tiles.rows; i++){
                 for (int j = 0; j < tiles.cols; j++){
                     double tile = tiles.at<double>(i, j);

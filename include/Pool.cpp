@@ -69,7 +69,7 @@ int Pool::calculateFitness() {
 
 bool isLhsFitnessBigger(const Genome a, const Genome b) { return a.getFitness() > b.getFitness(); }
 
-void Pool::removeStaleSpecies(int staleSpecies) {
+void Pool::removeStaleSpecies() {
     vector<Species> survived;
 
     for (int s = 0; s < species.size(); s++) {
@@ -87,7 +87,7 @@ void Pool::removeStaleSpecies(int staleSpecies) {
         else species[s].setStaleness(species[s].getStaleness() + 1);
 
 
-        if (species[s].getStaleness() < staleSpecies || species[s].getTopFitness() >= maxFitness) {
+        if (species[s].getStaleness() < Pool::STALE_SPECIES || species[s].getTopFitness() >= maxFitness) {
             survived.push_back(species[s]);
         }
     }
@@ -95,13 +95,13 @@ void Pool::removeStaleSpecies(int staleSpecies) {
     species = survived;
 }
 
-void Pool::removeWeakSpecies(int population) {
+void Pool::removeWeakSpecies() {
     vector<Species> survived;
 
     int sum = calculateFitness();
 
     for (int s = 0; s < species.size(); s++) {
-        double breed = floor(species[s].getAverageFitness() / sum * population);
+        double breed = floor(species[s].getAverageFitness() / sum * Pool::POPULATION);
 
         if (breed >= 1) survived.push_back(species[s]);
 
@@ -200,17 +200,102 @@ void Pool::nextGenome(){
     currentGenome++;
 
     if (currentGenome == species[currentSpecies].getGenomes().size()) {
+
+        species[currentSpecies].calculateFitness();
+        if (species[currentSpecies].getTopFitness() > maxFitness){
+            maxFitness = species[currentSpecies].getTopFitness();
+        }
+
         currentSpecies++;
         currentGenome = 0;
 
         if (currentSpecies == species.size()) {
             currentSpecies = 0;
-            // TODO:: mutate, crossover etc
+            // TODO:: mutate, crossover etc+
+            newGeneration();
         }
     }
 }
 
+int Pool::poolAverageFitness(){
+    int sum = 0;
 
+    for (int i = 0; i < species.size(); i++){
+        sum += species[i].getAverageFitness();
+    }
+
+    return sum/species.size();
+}
+
+
+void Pool::cullSpecies(bool cutToOne) {
+
+
+    for (int i = 0; i < species.size(); i++) {
+        sort(species[i].getGenomes().begin(), species[i].getGenomes().end(), isLhsFitnessBigger);
+
+
+        int remaining = (species[i].getGenomes().size()/ 2);
+        if (cutToOne) remaining = 1;
+
+        while (species[i].getGenomes().size() > remaining) {
+            species[i].getGenomes().pop_back();
+        }
+    }
+}
+
+// order genomes from ALL species by fitness
+void Pool::rankGlobally() {
+    vector<Genome> global;
+    for (int i = 0; i < species.size(); i++) {
+        for (int g = 0; g < species[i].getGenomes().size(); g++) {
+            global.push_back(species[i].getGenomes()[g]);
+        }
+    }
+
+    sort(global.begin(), global.end(), isLhsFitnessBigger);
+
+    for (int g = 0; g < global.size(); g++) {
+        global[g].setGlobalRank(g);
+    }
+}
+
+void Pool::newGeneration() {
+    cullSpecies(false); // Cull the bottom half of each species
+
+    rankGlobally(); // order genomes from ALL species by fitness
+
+    removeStaleSpecies();
+
+    rankGlobally();
+
+
+    removeWeakSpecies();
+    int sum = poolAverageFitness();
+    vector<Genome> children;
+
+    for (int i = 0; i < species.size(); i++) {
+        int breed = (species[i].getAverageFitness() / sum * Pool::POPULATION) - 1;
+
+        for (int j = 0; j < breed; j++) {
+            children.push_back(species[i].breedChild());
+        }
+    }
+
+    cullSpecies(true); // Cull all but the top member of each species
+
+    // fill up the vector until we have enough population
+    while (children.size() + species.size() < Pool::POPULATION) {
+        children.push_back(species[rand()%species.size()].breedChild());
+    }
+
+
+    for (int i = 0; i < children.size(); i++) {
+        addToSpecies(children[i]);
+    }
+
+    generation++;
+}
 
 //GETTERS
 

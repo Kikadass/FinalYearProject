@@ -24,7 +24,7 @@ public:
     void setStaleness(int staleness);
     void calculateFitness();
 
-    Genome breedChild(int crossoverChance);
+    Genome breedChild();
     void addChild(Genome child);
     Genome crossover(Genome g1, Genome g2);
 

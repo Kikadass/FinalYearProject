@@ -34,6 +34,7 @@ public:
     void addGene(Gene g);
     void setFitness(int fitness);
     void setMaxNeuron(int maxNeuron);
+    void setGlobalRank(int globalRank);
     void copyMutationRates(MutationRates mR);
     void mutate();
     void pointMutate();
@@ -49,7 +50,9 @@ private:
     int adjustedFitness;
     map<int, Neuron2> network;
     int maxNeuron;
-    int globalRank;     // fitness for that genome
+    int globalRank;
+
+    // in which rank they are in
     MutationRates mutationRates;
 
     void nodeMutate();
