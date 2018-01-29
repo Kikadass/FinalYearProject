@@ -19,6 +19,8 @@ public:
 
 private:
     double value;
+    //genes are stored in the output neuron
+    //gene.out should be the Neuron that is holding i
     vector<Gene> genes;
 
 

@@ -29,11 +29,12 @@ public:
     int getFitness() const;
     int getMaxNeuron();
     MutationRates getMutationRates();
+    void showGenome();
 
     //SETTERS
     void addGene(Gene g);
     void setFitness(int fitness);
-    void setMaxNeuron(int maxNeuron);
+    void setLastNeuronCreated(int lastNeuronCreated);
     void setGlobalRank(int globalRank);
     void copyMutationRates(MutationRates mR);
     void mutate();
@@ -49,7 +50,7 @@ private:
     int fitness;
     int adjustedFitness;
     map<int, Neuron2> network;
-    int maxNeuron;
+    int lastNeuronCreated;      // this is the index of the last neuron created not taking into account the output neurons
     int globalRank;
 
     // in which rank they are in
@@ -62,6 +63,8 @@ private:
     int randomNeuron(bool nonInput);
 
     bool containsLink(Gene link);
+
+    void showGene(int iterations, int neuron);
 };
 
 

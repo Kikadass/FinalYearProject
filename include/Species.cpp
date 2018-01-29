@@ -86,7 +86,7 @@ Genome Species::crossover(Genome g1, Genome g2) {
         } else child.addGene(gene1);
     }
 
-    child.setMaxNeuron(max(g1.getMaxNeuron(), g2.getMaxNeuron()));
+    child.setLastNeuronCreated(max(g1.getMaxNeuron(), g2.getMaxNeuron()));
 
     child.copyMutationRates(g1.getMutationRates());
 

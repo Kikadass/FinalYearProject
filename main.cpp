@@ -661,6 +661,7 @@ int main( int argc, char** argv ) {
             }
 
             int buttonToPress = pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()].evaluateNetwork(inputs);
+
             pressButton(buttonToPress);
 
             int keyPressed = waitKeyEx(250);
