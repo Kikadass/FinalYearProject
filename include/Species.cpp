@@ -21,7 +21,7 @@ int Species::getAverageFitness() const {
     return averageFitness;
 }
 
-vector<Genome> &Species::getGenomes() {
+vector<Genome>& Species::getGenomes() {
     return genomes;
 }
 

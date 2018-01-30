@@ -12,7 +12,7 @@ Genome::Genome(){
     fitness = 0;
     adjustedFitness = 0;
     lastNeuronCreated = 0;
-    globalRank = 0;
+    globalRank = -1;
     mutationRates.connections = Pool::ConnMutateChance;
     mutationRates.link = Pool::LinkMutateChance;
     mutationRates.node = Pool::NodeMutateChance;
@@ -27,7 +27,7 @@ MutationRates Genome::getMutationRates(){
     return mutationRates;
 }
 
-const vector<Gene> &Genome::getGenes() const {
+const vector<Gene>& Genome::getGenes() const {
     return genes;
 }
 

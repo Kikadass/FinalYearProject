@@ -101,7 +101,7 @@ void Pool::removeWeakSpecies() {
     int sum = calculateFitness();
 
     for (int s = 0; s < species.size(); s++) {
-        double breed = floor(species[s].getAverageFitness() / sum * Pool::POPULATION);
+         double breed = floor(species[s].getAverageFitness() / sum * Pool::POPULATION);
 
         if (breed >= 1) survived.push_back(species[s]);
 
@@ -235,7 +235,7 @@ void Pool::cullSpecies(bool cutToOne) {
         sort(species[i].getGenomes().begin(), species[i].getGenomes().end(), isLhsFitnessBigger);
 
 
-        int remaining = (species[i].getGenomes().size()/ 2);
+        int remaining = (species[i].getGenomes().size()/ 2)+rand()%2;
         if (cutToOne) remaining = 1;
 
         while (species[i].getGenomes().size() > remaining) {
@@ -246,17 +246,25 @@ void Pool::cullSpecies(bool cutToOne) {
 
 // order genomes from ALL species by fitness
 void Pool::rankGlobally() {
-    vector<Genome> global;
+    vector<int> global;
+
     for (int i = 0; i < species.size(); i++) {
         for (int g = 0; g < species[i].getGenomes().size(); g++) {
-            global.push_back(species[i].getGenomes()[g]);
+            global.push_back(species[i].getGenomes()[g].getFitness());
+            species[i].getGenomes()[g].setGlobalRank(-1);
         }
     }
 
-    sort(global.begin(), global.end(), isLhsFitnessBigger);
+    sort(global.begin(), global.end(), greater<int>());
 
     for (int g = 0; g < global.size(); g++) {
-        global[g].setGlobalRank(g);
+        for (int i = 0; i < species.size(); i++) {
+            for (int j = 0; j < species[i].getGenomes().size(); j++) {
+                if (species[i].getGenomes()[j].getFitness() == global[g] && species[i].getGenomes()[j].getGlobalRank() == -1){
+                    species[i].getGenomes()[j].setGlobalRank(g);
+                }
+            }
+        }
     }
 }
 
@@ -309,7 +317,7 @@ int Pool::getCurrentSpecies() {
 }
 
 int Pool::getCurrentGenome() {
-    return currentGenome;
+     return currentGenome;
 }
 
 vector<Species> &Pool::getSpecies() {

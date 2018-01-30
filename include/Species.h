@@ -14,7 +14,7 @@ public:
     Species(vector<Genome> genomes);
 
     //GETTERS
-    vector<Genome> &getGenomes();
+    vector<Genome>& getGenomes();
     int getAverageFitness() const;
     int getTopFitness() const;
     int getStaleness() const;

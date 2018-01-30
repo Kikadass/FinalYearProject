@@ -236,7 +236,7 @@ void pressButton(int i) {
             break;
     }
 
-    pressKey(button);
+    for (int i = 0; i < 100; i++) pressKey(button);
 }
 
 
@@ -426,6 +426,7 @@ int getFitness(Mat screen, vector<Mat> sprites) {
 
             for (int k = 0; k < sprites.size(); k++) {
 
+
                 if (averageErrorBnW(sprites[k], block) < aeBnW) {
                     mostSimilar = k;
                     aeBnW = averageErrorBnW(sprites[k], block);
@@ -608,7 +609,6 @@ int main( int argc, char** argv ) {
         int points = 0; // fitness
         int timeout = Pool::TIMEOUT_CONSTANT;
 
-        sleep(2);
         pressButton(7);
         sleep(1);
         cout << "Starting the game" << endl;
@@ -618,6 +618,11 @@ int main( int argc, char** argv ) {
 
 
         while (!dead) {
+            int keyPressed = waitKeyEx(250);
+            // if pressed ESC it closes the program
+            if (keyPressed == 27) {
+                return 0;
+            }
 
             Mat screen = getScreen();
 
@@ -628,7 +633,8 @@ int main( int argc, char** argv ) {
 
 
             //check if player has died.  The Blue values for the lives are between 40 and 70. if is less than that, there is no live in that tile
-            if (tiles.at<double>(tiles.rows-2, 3) < 30){
+            // or if space is pressed. only for debugging
+            if (tiles.at<double>(tiles.rows-2, 3) < 30 || keyPressed == 32){
                 int fitness = getFitness(screen, sprites);
                 dead = true;
                 pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()].setFitness(fitness);
@@ -662,20 +668,12 @@ int main( int argc, char** argv ) {
 
             int buttonToPress = pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()].evaluateNetwork(inputs);
 
-            pressButton(buttonToPress);
-
-            int keyPressed = waitKeyEx(250);
-            // if pressed ESC it closes the program
-            if (keyPressed == 27) {
-                return 0;
-            }
-            else if (keyPressed == 32){     // pressed space
-                dead = true;
-            }
-
+            //for (int i = 0; i < 100; i++) {
+                pressButton(buttonToPress);
+            //}
         }
 
-        pool.nextGenome();
+         pool.nextGenome();
     }
 
 
