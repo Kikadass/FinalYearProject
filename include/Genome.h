@@ -24,15 +24,15 @@ public:
     Genome();
 
     //GETTERS
-    const vector<Gene> &getGenes() const;
+    vector<Gene*> getGenes();
     int getGlobalRank();
-    int getFitness() const;
+    int getFitness();
     int getMaxNeuron();
     MutationRates getMutationRates();
     void showGenome();
 
     //SETTERS
-    void addGene(Gene g);
+    void addGene(Gene* g);
     void setFitness(int fitness);
     void setLastNeuronCreated(int lastNeuronCreated);
     void setGlobalRank(int globalRank);
@@ -46,7 +46,7 @@ public:
 
 
 private:
-    vector<Gene> genes;
+    vector<Gene*> genes;
     int fitness;
     int adjustedFitness;
     map<int, Neuron2> network;
@@ -62,7 +62,7 @@ private:
 
     int randomNeuron(bool nonInput);
 
-    bool containsLink(Gene link);
+    bool containsLink(Gene* link);
 
     void showGene(int iterations, int neuron);
 };

@@ -44,8 +44,8 @@ Pool::Pool() {
     maxFitness = 0;
 
     for (int i = 0; i < Pool::POPULATION; i++) {
-        Genome basic;
-        basic.firstGenome();
+        Genome* basic = new Genome();
+        basic->firstGenome();
         addToSpecies(basic);
     }
 }
@@ -67,7 +67,8 @@ int Pool::calculateFitness() {
     return total;
 }
 
-bool isLhsFitnessBigger(const Genome a, const Genome b) { return a.getFitness() > b.getFitness(); }
+bool isLhsFitnessBigger(Genome* a, Genome* b) { return a->getFitness() > b->getFitness(); }
+
 
 void Pool::removeStaleSpecies() {
     vector<Species> survived;
@@ -75,13 +76,16 @@ void Pool::removeStaleSpecies() {
     for (int s = 0; s < species.size(); s++) {
 
         // sort genomes in the species by fitness
-        vector<Genome> &genomes = species[s].getGenomes();
-        sort(genomes.begin(), genomes.end(), isLhsFitnessBigger);
+        vector<Genome*> genomes = species[s].getGenomes();
+
+        if (genomes.size() >= 2) {
+            sort(genomes.begin(), genomes.end(), isLhsFitnessBigger);
+        }
 
 
-        if (genomes[1].getFitness() > species[s].getTopFitness()){
+        if (genomes[0]->getFitness() > species[s].getTopFitness()){
 
-            species[s].setTopFitness(genomes[1].getFitness());
+            species[s].setTopFitness(genomes[0]->getFitness());
             species[s].setStaleness(0);
         }
         else species[s].setStaleness(species[s].getStaleness() + 1);
@@ -101,7 +105,7 @@ void Pool::removeWeakSpecies() {
     int sum = calculateFitness();
 
     for (int s = 0; s < species.size(); s++) {
-         double breed = floor(species[s].getAverageFitness() / sum * Pool::POPULATION);
+        double breed = (species[s].getAverageFitness()*Pool::POPULATION)/sum;
 
         if (breed >= 1) survived.push_back(species[s]);
 
@@ -110,37 +114,37 @@ void Pool::removeWeakSpecies() {
     species = survived;
 }
 
-bool Pool::sameSpecies(Genome genome1, Genome genome2) {
-    double dd = DELTA_DISJOINT * disjoint(genome1.getGenes(), genome2.getGenes());
-    double dw = DELTA_WEIGHTS * weights(genome1.getGenes(), genome2.getGenes());
+bool Pool::sameSpecies(Genome* genome1, Genome* genome2) {
+    double dd = DELTA_DISJOINT * disjoint(genome1->getGenes(), genome2->getGenes());
+    double dw = DELTA_WEIGHTS * weights(genome1->getGenes(), genome2->getGenes());
     return (dd + dw) < DELTA_THRESHOLD;
 }
 
 
-double Pool::disjoint(vector<Gene> genes1, vector<Gene> genes2) {
+double Pool::disjoint(vector<Gene*> genes1, vector<Gene*> genes2) {
     if (genes1.size() == 0 && genes2.size() == 0){
         return 0;
     }
 
     map<int, bool> i1;
     for (int i = 0; i < genes1.size(); i++) {
-        i1[genes1[i].getInnovation()] = true;
+        i1[genes1[i]->getInnovation()] = true;
     }
 
     map<int, bool> i2;
     for (int i = 0; i < genes2.size(); i++) {
-        i2[genes2[i].getInnovation()] = true;
+        i2[genes2[i]->getInnovation()] = true;
     }
 
     int disjointGenes = 0;
     for (int i = 0; i < genes1.size(); i++) {
-        if (!i2[genes1[i].getInnovation()]) {
+        if (!i2[genes1[i]->getInnovation()]) {
             disjointGenes++;
         }
     }
 
     for (int i = 0; i < genes2.size(); i++) {
-        if (!i1[genes2[i].getInnovation()]) {
+        if (!i1[genes2[i]->getInnovation()]) {
             disjointGenes++;
         }
     }
@@ -150,21 +154,21 @@ double Pool::disjoint(vector<Gene> genes1, vector<Gene> genes2) {
     return disjointGenes / n;
 }
 
-double Pool::weights(vector<Gene> genes1, vector<Gene> genes2) {
+double Pool::weights(vector<Gene*> genes1, vector<Gene*> genes2) {
     if (genes1.size() == 0 && genes2.size() == 0){
         return 0;
     }
 
-    map<int, Gene> i2;
+    map<int, Gene*> i2;
     for (int i = 0; i < genes2.size(); i++) {
-        i2[genes2[i].getInnovation()] = genes2[i];
+        i2[genes2[i]->getInnovation()] = genes2[i];
     }
 
     int sum = 0;
     int coincident = 0;
     for (int i = 0; i < genes1.size(); i++) {
-        if (i2.count(genes1[i].getInnovation()) == 0){
-            sum = sum + abs(genes1[i].getWeight() - i2[genes1[i].getInnovation()].getWeight());
+        if (i2.find(genes1[i]->getInnovation()) != i2.end()){
+            sum = sum + abs(genes1[i]->getWeight() - i2[genes1[i]->getInnovation()]->getWeight());
             coincident++;
         }
     }
@@ -175,7 +179,7 @@ double Pool::weights(vector<Gene> genes1, vector<Gene> genes2) {
 }
 
 
-void Pool::addToSpecies(Genome child) {
+void Pool::addToSpecies(Genome* child) {
     cout << "Adding child to Species" << endl;
     bool foundSpecies = false;
 
@@ -188,7 +192,7 @@ void Pool::addToSpecies(Genome child) {
     }
 
     if (!foundSpecies) {
-        vector<Genome> children;
+        vector<Genome*> children;
         children.push_back(child);
         Species childSpecies = Species(children);
         species.push_back(childSpecies);
@@ -230,41 +234,36 @@ int Pool::poolAverageFitness(){
 
 void Pool::cullSpecies(bool cutToOne) {
 
-
     for (int i = 0; i < species.size(); i++) {
-        sort(species[i].getGenomes().begin(), species[i].getGenomes().end(), isLhsFitnessBigger);
+        vector<Genome*> genomes = species[i].getGenomes();
+        sort(genomes.begin(), genomes.end(), isLhsFitnessBigger);
 
 
-        int remaining = (species[i].getGenomes().size()/ 2)+rand()%2;
+        int remaining = (genomes.size()/ 2)+rand()%2;
         if (cutToOne) remaining = 1;
 
-        while (species[i].getGenomes().size() > remaining) {
-            species[i].getGenomes().pop_back();
+        while (genomes.size() > remaining) {
+            genomes.pop_back();
         }
+
+        species[i].setGenomes(genomes);
     }
 }
 
+
 // order genomes from ALL species by fitness
 void Pool::rankGlobally() {
-    vector<int> global;
-
+    vector<Genome*> global;
     for (int i = 0; i < species.size(); i++) {
         for (int g = 0; g < species[i].getGenomes().size(); g++) {
-            global.push_back(species[i].getGenomes()[g].getFitness());
-            species[i].getGenomes()[g].setGlobalRank(-1);
+            global.push_back(species[i].getGenomes()[g]);
         }
     }
 
-    sort(global.begin(), global.end(), greater<int>());
+    sort(global.begin(), global.end(), isLhsFitnessBigger);
 
     for (int g = 0; g < global.size(); g++) {
-        for (int i = 0; i < species.size(); i++) {
-            for (int j = 0; j < species[i].getGenomes().size(); j++) {
-                if (species[i].getGenomes()[j].getFitness() == global[g] && species[i].getGenomes()[j].getGlobalRank() == -1){
-                    species[i].getGenomes()[j].setGlobalRank(g);
-                }
-            }
-        }
+        global[g]->setGlobalRank(g);
     }
 }
 
@@ -280,10 +279,10 @@ void Pool::newGeneration() {
 
     removeWeakSpecies();
     int sum = poolAverageFitness();
-    vector<Genome> children;
+    vector<Genome*> children;
 
     for (int i = 0; i < species.size(); i++) {
-        int breed = (species[i].getAverageFitness() / sum * Pool::POPULATION) - 1;
+        int breed = (species[i].getAverageFitness()*Pool::POPULATION)/sum - 1;
 
         for (int j = 0; j < breed; j++) {
             children.push_back(species[i].breedChild());
@@ -317,12 +316,10 @@ int Pool::getCurrentSpecies() {
 }
 
 int Pool::getCurrentGenome() {
-     return currentGenome;
+    return currentGenome;
 }
 
 vector<Species> &Pool::getSpecies() {
     return species;
 }
-
-
 

@@ -11,10 +11,10 @@
 
 class Species {
 public:
-    Species(vector<Genome> genomes);
+    Species(vector<Genome*> genomes);
 
     //GETTERS
-    vector<Genome>& getGenomes();
+    vector<Genome*> getGenomes();
     int getAverageFitness() const;
     int getTopFitness() const;
     int getStaleness() const;
@@ -22,18 +22,19 @@ public:
     //SETTERS
     void setTopFitness(int topFitness);
     void setStaleness(int staleness);
+    void setGenomes(vector<Genome *> genomes);
     void calculateFitness();
 
-    Genome breedChild();
-    void addChild(Genome child);
-    Genome crossover(Genome g1, Genome g2);
+    Genome* breedChild();
+    void addChild(Genome* child);
+    Genome* crossover(Genome* g1, Genome* g2);
 
 
 
 private:
     int topFitness;
     int staleness;
-    vector<Genome> genomes;
+    vector<Genome*> genomes;
     int averageFitness;
 
 };

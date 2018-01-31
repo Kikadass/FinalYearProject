@@ -25,23 +25,23 @@ Gene::Gene(int into, int out, double weight, bool enabled){
 }
 
 //GETTERS
-int Gene::getInto() const {
+int Gene::getInto() {
     return into;
 }
 
-int Gene::getOut() const {
+int Gene::getOut() {
     return out;
 }
 
-double Gene::getWeight() const {
+double Gene::getWeight() {
     return weight;
 }
 
-bool Gene::isEnabled() const {
+bool Gene::isEnabled() {
     return enabled;
 }
 
-int Gene::getInnovation() const {
+int Gene::getInnovation() {
     return innovation;
 }
 

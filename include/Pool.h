@@ -64,13 +64,13 @@ public:
 
     void removeWeakSpecies();
 
-    void addToSpecies(Genome child);
+    void addToSpecies(Genome* child);
 
-    bool sameSpecies(Genome genome1, Genome genome2);
+    bool sameSpecies(Genome* genome1, Genome* genome2);
 
-    double disjoint(vector<Gene> genes1, vector<Gene> genes2);
+    double disjoint(vector<Gene*> genes1, vector<Gene*> genes2);
 
-    double weights(vector<Gene> genes1, vector<Gene> genes2);
+    double weights(vector<Gene*> genes1, vector<Gene*> genes2);
 
     void nextGenome();
 

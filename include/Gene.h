@@ -26,11 +26,11 @@ public:
     void setEnabled(bool enabled);
 
     //GETTERS
-    int getInto() const;
-    int getOut() const;
-    int getInnovation() const;
-    bool isEnabled() const;
-    double getWeight() const;
+    int getInto();
+    int getOut();
+    int getInnovation();
+    bool isEnabled();
+    double getWeight();
 
 
 

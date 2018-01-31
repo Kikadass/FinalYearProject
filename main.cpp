@@ -614,7 +614,8 @@ int main( int argc, char** argv ) {
         cout << "Starting the game" << endl;
 
         cout << "Generating Network!" << endl;
-        pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()].generateNetwork();
+
+        pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()]->generateNetwork();
 
 
         while (!dead) {
@@ -637,7 +638,7 @@ int main( int argc, char** argv ) {
             if (tiles.at<double>(tiles.rows-2, 3) < 30 || keyPressed == 32){
                 int fitness = getFitness(screen, sprites);
                 dead = true;
-                pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()].setFitness(fitness);
+                pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()]->setFitness(fitness);
 
                 continue;
             }
@@ -666,7 +667,7 @@ int main( int argc, char** argv ) {
                 }
             }
 
-            int buttonToPress = pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()].evaluateNetwork(inputs);
+            int buttonToPress = pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()]->evaluateNetwork(inputs);
 
             //for (int i = 0; i < 100; i++) {
                 pressButton(buttonToPress);
