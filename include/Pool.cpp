@@ -36,7 +36,6 @@ int Pool::TIMEOUT_CONSTANT = 1000;
 int Pool::MaxNodes = 1000000;
 
 Pool::Pool() {
-    vector<Species> species;
     generation = 0;
     currentSpecies = 0;
     currentGenome = 0;
@@ -50,7 +49,7 @@ Pool::Pool() {
     }
 }
 
-int Pool::calculateFitness() {
+void Pool::calculateFitness() {
     int total = 0;
     int max = 0;
 
@@ -64,54 +63,54 @@ int Pool::calculateFitness() {
 
     maxFitness = max;
 
-    return total;
+    averageFitness = total/species.size();
 }
 
 bool isLhsFitnessBigger(Genome* a, Genome* b) { return a->getFitness() > b->getFitness(); }
 
 
+// if fitness has not improved in 15 generations. get rid of species unless it is the best species in the pool
 void Pool::removeStaleSpecies() {
-    vector<Species> survived;
-
     for (int s = 0; s < species.size(); s++) {
-
-        // sort genomes in the species by fitness
         vector<Genome*> genomes = species[s].getGenomes();
 
-        if (genomes.size() >= 2) {
+        // sort genomes in the species by fitness
+        if (species[s].getGenomes().size() >= 2) {
+
             sort(genomes.begin(), genomes.end(), isLhsFitnessBigger);
         }
 
 
         if (genomes[0]->getFitness() > species[s].getTopFitness()){
-
             species[s].setTopFitness(genomes[0]->getFitness());
             species[s].setStaleness(0);
         }
         else species[s].setStaleness(species[s].getStaleness() + 1);
 
 
-        if (species[s].getStaleness() < Pool::STALE_SPECIES || species[s].getTopFitness() >= maxFitness) {
-            survived.push_back(species[s]);
+        if (species[s].getStaleness() > Pool::STALE_SPECIES && species[s].getTopFitness() < maxFitness) {
+            species.erase(species.begin()+s);
         }
     }
+}
 
-    species = survived;
+double Round(double x, int p) {
+    if (x != 0.0) {
+        return ((floor((fabs(x)*pow(double(10.0),p))+0.5))/pow(double(10.0),p))*(x/fabs(x));
+    } else {
+        return 0;
+    }
 }
 
 void Pool::removeWeakSpecies() {
-    vector<Species> survived;
-
-    int sum = calculateFitness();
+    calculateFitness();
 
     for (int s = 0; s < species.size(); s++) {
-        double breed = (species[s].getAverageFitness()*Pool::POPULATION)/sum;
+        double average = (double)species[s].getAverageFitness()/(double)averageFitness;
+        int breed = Round(average, 0);
 
-        if (breed >= 1) survived.push_back(species[s]);
-
+        if (breed < 1) species.erase(species.begin()+s);
     }
-
-    species = survived;
 }
 
 bool Pool::sameSpecies(Genome* genome1, Genome* genome2) {
@@ -136,6 +135,7 @@ double Pool::disjoint(vector<Gene*> genes1, vector<Gene*> genes2) {
         i2[genes2[i]->getInnovation()] = true;
     }
 
+    // count how many innovation numbers are different
     int disjointGenes = 0;
     for (int i = 0; i < genes1.size(); i++) {
         if (!i2[genes1[i]->getInnovation()]) {
@@ -221,17 +221,6 @@ void Pool::nextGenome(){
     }
 }
 
-int Pool::poolAverageFitness(){
-    int sum = 0;
-
-    for (int i = 0; i < species.size(); i++){
-        sum += species[i].getAverageFitness();
-    }
-
-    return sum/species.size();
-}
-
-
 void Pool::cullSpecies(bool cutToOne) {
 
     for (int i = 0; i < species.size(); i++) {
@@ -239,12 +228,13 @@ void Pool::cullSpecies(bool cutToOne) {
         sort(genomes.begin(), genomes.end(), isLhsFitnessBigger);
 
 
-        int remaining = (genomes.size()/ 2)+rand()%2;
-        if (cutToOne) remaining = 1;
+        int remaining = (genomes.size()/ 2);
+        if (cutToOne || remaining < 1) remaining = 1;
 
         while (genomes.size() > remaining) {
             genomes.pop_back();
         }
+
 
         species[i].setGenomes(genomes);
     }
@@ -254,6 +244,7 @@ void Pool::cullSpecies(bool cutToOne) {
 // order genomes from ALL species by fitness
 void Pool::rankGlobally() {
     vector<Genome*> global;
+
     for (int i = 0; i < species.size(); i++) {
         for (int g = 0; g < species[i].getGenomes().size(); g++) {
             global.push_back(species[i].getGenomes()[g]);
@@ -267,6 +258,9 @@ void Pool::rankGlobally() {
     }
 }
 
+
+// remove the bottom half of the genomes of each species
+// remove
 void Pool::newGeneration() {
     cullSpecies(false); // Cull the bottom half of each species
 
@@ -278,24 +272,26 @@ void Pool::newGeneration() {
 
 
     removeWeakSpecies();
-    int sum = poolAverageFitness();
+
     vector<Genome*> children;
 
-    for (int i = 0; i < species.size(); i++) {
-        int breed = (species[i].getAverageFitness()*Pool::POPULATION)/sum - 1;
+    // add
+    for (int s = 0; s < species.size(); s++) {
+        double average = (double)species[s].getAverageFitness()/(double)averageFitness;
+        int breed = Round(average, 0)-1;
+
 
         for (int j = 0; j < breed; j++) {
-            children.push_back(species[i].breedChild());
+            children.push_back(species[s].breedChild());
         }
     }
 
     cullSpecies(true); // Cull all but the top member of each species
 
-    // fill up the vector until we have enough population
+
     while (children.size() + species.size() < Pool::POPULATION) {
         children.push_back(species[rand()%species.size()].breedChild());
     }
-
 
     for (int i = 0; i < children.size(); i++) {
         addToSpecies(children[i]);

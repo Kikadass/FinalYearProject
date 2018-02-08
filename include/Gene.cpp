@@ -21,7 +21,11 @@ Gene::Gene(int into, int out, double weight, bool enabled){
     Gene::out = out;
     Gene::weight = weight;
     Gene::enabled = enabled;
-    Gene::innovation = ++generalInnovation;
+}
+
+Gene::Gene(int into, int out, double weight, bool enabled, int innovation){
+    Gene(into, out, weight, enabled);
+    Gene::innovation = innovation;
 }
 
 //GETTERS

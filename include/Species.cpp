@@ -107,9 +107,9 @@ Genome* Species::breedChild() {
         child = crossover(g1, g2);
     }
     else {
-        //TODO: copy genome without taking it by reference
-        Genome x = *genomes[rand()%genomes.size()];
-        child = &x;
+        Genome genome = *genomes[rand()%genomes.size()];
+        Genome* x = new Genome(genome.getGenes(), genome.getFitness(), genome.getAdjustedFitness(), genome.getLastNeuronCreated(), genome.getGlobalRank(), genome.getMutationRates());
+        child = x;
     }
 
     child->mutate();

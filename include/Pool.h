@@ -15,6 +15,7 @@ private:
     int currentGenome;
     int currentFrame;
     int maxFitness;
+    int averageFitness;
 
 public:
     static int ScreenHeight;
@@ -58,7 +59,7 @@ public:
 
     int getCurrentGenome();
 
-    int calculateFitness();
+    void calculateFitness();
 
     void removeStaleSpecies();
 
@@ -75,8 +76,6 @@ public:
     void nextGenome();
 
     void newGeneration();
-
-    int poolAverageFitness();
 
     void cullSpecies(bool cutToOne);
 

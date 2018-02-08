@@ -23,10 +23,15 @@ class Genome {
 public:
     Genome();
 
+    Genome(vector<Gene *> genes/*, map<int, Neuron2> network*/, int fitness, int adjustedFitness, int lastNeuronCreated,
+               int globalRank, MutationRates mutationRates);
+
     //GETTERS
     vector<Gene*> getGenes();
     int getGlobalRank();
     int getFitness();
+    int getAdjustedFitness();
+    int getLastNeuronCreated();
     int getMaxNeuron();
     MutationRates getMutationRates();
     void showGenome();
@@ -65,6 +70,7 @@ private:
     bool containsLink(Gene* link);
 
     void showGene(int iterations, int neuron);
+
 };
 
 

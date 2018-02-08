@@ -20,6 +20,9 @@ public:
 
     Gene(int into, int out, double weight, bool enabled);
 
+    Gene(int into, int out, double weight, bool enabled, int innovation);
+
+
     //SETTERS
     void innitializeWeight();
     void setWeight(double weight);

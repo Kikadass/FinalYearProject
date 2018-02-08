@@ -22,6 +22,27 @@ Genome::Genome(){
     mutationRates.step = Pool::StepSize;
 }
 
+Genome::Genome(vector<Gene*> genes/*, map<int, Neuron2> network*/, int fitness, int adjustedFitness, int lastNeuronCreated, int globalRank, MutationRates mutationRates){
+    // copy genes but creating new pointers
+    for (Gene* g : genes){
+        Gene* newGene = new Gene(g->getInto(), g->getOut(), g->getWeight(), g->isEnabled(), g->getInnovation());
+        Genome::genes.push_back(newGene);
+    }
+
+    //Genome::network = network;
+    Genome::fitness = fitness;
+    Genome::adjustedFitness = adjustedFitness;
+    Genome::lastNeuronCreated = lastNeuronCreated;
+    Genome::globalRank = globalRank;
+    Genome::mutationRates.connections = mutationRates.connections;
+    Genome::mutationRates.link = mutationRates.link;
+    Genome::mutationRates.node = mutationRates.node;
+    Genome::mutationRates.bias = mutationRates.bias;
+    Genome::mutationRates.enable = mutationRates.enable;
+    Genome::mutationRates.disable = mutationRates.disable;
+    Genome::mutationRates.step = mutationRates.step;
+}
+
 //GETTERS
 MutationRates Genome::getMutationRates(){
     return mutationRates;
@@ -29,6 +50,14 @@ MutationRates Genome::getMutationRates(){
 
 vector<Gene*> Genome::getGenes() {
     return genes;
+}
+
+int Genome::getAdjustedFitness(){
+    return adjustedFitness;
+}
+
+int Genome::getLastNeuronCreated(){
+    return lastNeuronCreated;
 }
 
 int Genome::getMaxNeuron() {
