@@ -43,6 +43,8 @@ private:
     double weight;
     bool enabled;
     int innovation;
+
+    void setValues(int into, int out, double weight, bool enabled);
 };
 
 

@@ -108,8 +108,7 @@ Genome* Species::breedChild() {
     }
     else {
         Genome genome = *genomes[rand()%genomes.size()];
-        Genome* x = new Genome(genome.getGenes(), genome.getFitness(), genome.getAdjustedFitness(), genome.getLastNeuronCreated(), genome.getGlobalRank(), genome.getMutationRates());
-        child = x;
+        child = new Genome(genome.getGenes(), genome.getFitness(), genome.getAdjustedFitness(), genome.getLastNeuronCreated(), genome.getGlobalRank(), genome.getMutationRates());
     }
 
     child->mutate();

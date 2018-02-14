@@ -182,16 +182,12 @@ void pressKey(CGKeyCode keyCode){
     keydown = CGEventCreateKeyboardEvent (source, keyCode, true);
     keyup = CGEventCreateKeyboardEvent (source, keyCode, false);
 
-    //CGEventSetFlags(keydown, kCGEventFlagMaskCommand);  // this adds CTRL
-
     CGEventPost(kCGHIDEventTap, keydown);
+
+    //press button for 50ms
+    usleep(50000);
     CGEventPost(kCGHIDEventTap, keyup);
 
-    //CGEventPost(kCGSessionEventTap, keydown);
-    //CGEventPost(kCGSessionEventTap, keyup);
-
-    //CGEventPost(kCGAnnotatedSessionEventTap, saveCommandDown);
-    //CGEventPost(kCGAnnotatedSessionEventTap, saveCommandUp);
 
     CFRelease(keydown);
     CFRelease(keyup);
@@ -236,7 +232,7 @@ void pressButton(int i) {
             break;
     }
 
-    for (int i = 0; i < 100; i++) pressKey(button);
+    pressKey(button);
 }
 
 
@@ -576,7 +572,7 @@ void getSprites(vector<Mat>& sprites, char* location){
 Mat scaleUp(Mat image, int scale){
     resize(image, image, image.size()*scale, 0, 0, INTER_AREA);   //resize image
     imshow("Tiles3", image);                   // Show our image inside it.
-    moveWindow("Tiles3", 650, 300);
+    moveWindow("Tiles3", 0, 500);
     return image;
 }
 
@@ -619,7 +615,7 @@ int main( int argc, char** argv ) {
 
 
         while (!dead) {
-            int keyPressed = waitKeyEx(250);
+            int keyPressed = waitKeyEx(50);
             // if pressed ESC it closes the program
             if (keyPressed == 27) {
                 return 0;
@@ -644,7 +640,6 @@ int main( int argc, char** argv ) {
             }
 
             // convert values between 0 and 1 being 1 255
-
             tiles /= 255;
 
 
@@ -669,9 +664,7 @@ int main( int argc, char** argv ) {
 
             int buttonToPress = pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()]->evaluateNetwork(inputs);
 
-            //for (int i = 0; i < 100; i++) {
-                pressButton(buttonToPress);
-            //}
+            pressButton(buttonToPress);
         }
 
          pool.nextGenome();

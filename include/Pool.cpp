@@ -109,7 +109,10 @@ void Pool::removeWeakSpecies() {
         double average = (double)species[s].getAverageFitness()/(double)averageFitness;
         int breed = Round(average, 0);
 
-        if (breed < 1) species.erase(species.begin()+s);
+        if (breed < 1) {
+            species.erase(species.begin()+s);
+            s--;
+        }
     }
 }
 

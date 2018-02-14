@@ -17,14 +17,11 @@ Gene::Gene() {
 
 
 Gene::Gene(int into, int out, double weight, bool enabled){
-    Gene::into = into;
-    Gene::out = out;
-    Gene::weight = weight;
-    Gene::enabled = enabled;
+    setValues(into, out, weight, enabled);
 }
 
 Gene::Gene(int into, int out, double weight, bool enabled, int innovation){
-    Gene(into, out, weight, enabled);
+    setValues(into, out, weight, enabled);
     Gene::innovation = innovation;
 }
 
@@ -51,6 +48,13 @@ int Gene::getInnovation() {
 
 
 //SETTERS
+
+void Gene::setValues(int into, int out, double weight, bool enabled){
+    Gene::into = into;
+    Gene::out = out;
+    Gene::weight = weight;
+    Gene::enabled = enabled;
+}
 
 void Gene::innitializeWeight() {
     weight = rand() /double{RAND_MAX};

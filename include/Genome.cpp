@@ -25,8 +25,7 @@ Genome::Genome(){
 Genome::Genome(vector<Gene*> genes/*, map<int, Neuron2> network*/, int fitness, int adjustedFitness, int lastNeuronCreated, int globalRank, MutationRates mutationRates){
     // copy genes but creating new pointers
     for (Gene* g : genes){
-        Gene* newGene = new Gene(g->getInto(), g->getOut(), g->getWeight(), g->isEnabled(), g->getInnovation());
-        Genome::genes.push_back(newGene);
+        Genome::genes.push_back(new Gene(g->getInto(), g->getOut(), g->getWeight(), g->isEnabled(), g->getInnovation()));
     }
 
     //Genome::network = network;
@@ -359,6 +358,7 @@ int Genome::evaluateNetwork(vector<double> inputs) {
     }
 
 
+    /*
     // go through neurons, if they don't have genes they are input neurons already with a value.
     // if they have genes, they get the values of all inputs * by the weights
     // use sigmoid function with the sum (to convert it into a 0 to 1 value) and stores them in that neuron
@@ -373,6 +373,14 @@ int Genome::evaluateNetwork(vector<double> inputs) {
             //sigmoid function. set the value between 0 and 1
             network[i->first].setValue(sum / (1 + abs(sum)));
         }
+    }
+    */
+
+
+    map<int, Neuron2>::const_iterator i = network.end();
+    for (int x = 0; x < Pool::OUTPUT_SIZE; x++) {
+        i--;
+        evaluateNeuron(i->first);
     }
 
 
@@ -415,6 +423,33 @@ int Genome::evaluateNetwork(vector<double> inputs) {
     showGenome();
 
     return pressed;
+}
+
+double Genome::evaluateNeuron(int neuron){
+    double sum = 0;
+    for (int j = 0; j < network[neuron].getGenes().size(); j++) {
+        Gene gene = network[neuron].getGenes()[j];
+        double value = network[gene.getInto()].getValue();
+
+        // if neuron has not been evaluated, evaluate it
+        if (value == -20) value = evaluateNeuron(gene.getInto());
+
+        sum += gene.getWeight() * value;
+    }
+
+    if (network[neuron].getGenes().size() > 0) {
+        //sigmoid function. set the value between 0 and 1
+        double sigmoid = (double) 1 / ((double)1 + exp(-sum));
+
+        // normalize to -1 to 1
+        sigmoid = (sigmoid - 0.5) * 2;
+        network[neuron].setValue(sigmoid);
+    }
+
+    // if a network has not been initialized, asume it is a bias so return -1
+    if (network[neuron].getValue() == -20) return -1;
+
+    return network[neuron].getValue();
 }
 
 // print in console the Neural network that is connected to the outputs

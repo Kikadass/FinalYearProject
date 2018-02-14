@@ -5,7 +5,7 @@
 #include "Neuron2.h"
 
 Neuron2::Neuron2() {
-    Neuron2::value = -1;
+    Neuron2::value = -20;
 }
 
 void Neuron2::addGene(Gene gene){
