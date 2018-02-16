@@ -2,10 +2,9 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
-#include "include/Net.h"
 #include "include/TrainingData.h"
 #import <ApplicationServices/ApplicationServices.h>
-
+#include "nlohmann/json.hpp"
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgcodecs.hpp>
@@ -19,6 +18,8 @@
 
 using namespace std;
 using namespace cv;
+
+using json = nlohmann::json;
 
 enum {
     kVK_ANSI_A                    = 0x00,
@@ -142,17 +143,6 @@ enum {
 
 
 
-
-
-// distance between point 1 and point 2
-double distance(double x1, double y1, double x2, double y2) {
-    return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-}
-
-double sigmoid(double x){
-    return x / (1 + abs(x));
-}
-
 float averageErrorBnW(Mat& originalImage, Mat& image){
 
     float error = 0;
@@ -168,12 +158,71 @@ float averageErrorBnW(Mat& originalImage, Mat& image){
     return error;
 }
 
-void showVector(string label, vector<double> &v){
-    cout << label << " ";
-    for (int i = 0; i < v.size(); i++){
-        cout << v[i] << " ";
+//create a map of the tiles by the averages of the colors in blocks
+Mat getAveragesColor(Mat screen) {
+    int height = screen.rows;
+    int width = screen.cols;
+    int tileHeight = 24;
+    int tileWidth = 32;
+
+    Mat tiles = Mat(height / tileHeight, width / tileWidth, CV_32S);
+
+    for (int i = 0; i < (height / tileHeight) * tileHeight; i += tileHeight) {
+        for (int j = 0; j < (width / tileWidth) * tileWidth; j += tileWidth) {
+
+            //get the sum of all the colors of the block in the 3 planes in order to get the average
+            float color = 0;
+            for (int k = 0; k < 3; k++) {
+                //get 8x8 block from image from (j,i) coordinates
+                Mat block;
+                block = screen(cv::Rect(j, i, tileWidth, tileHeight));
+
+                for (int x = 0; x < block.rows; x++){
+                    for (int y = 0; y < block.cols; y++){
+                        color += block.at<Vec3b>(x,y)[k];
+                    }
+                }
+            }
+
+            color /= (3.0f*(float)tileWidth*(float)tileHeight);
+            tiles.at<int>(i / tileHeight, j / tileWidth) = (int)color;
+        }
     }
-    cout << endl;
+
+    return tiles;
+}
+
+Mat getAveragesBnW(Mat screen) {
+    int height = screen.rows;
+    int width = screen.cols;
+    int tileHeight = 24;
+    int tileWidth = 32;
+    int planeSelected = 1;
+
+    Mat tiles = Mat(height / tileHeight, width / tileWidth, CV_32S);
+
+    for (int i = 0; i < (height / tileHeight) * tileHeight; i += tileHeight) {
+        for (int j = 0; j < (width / tileWidth) * tileWidth; j += tileWidth) {
+
+            //get the sum of all the colors of the block in the 3 planes in order to get the average
+            float color = 0;
+            //get 8x8 block from image from (j,i) coordinates
+            Mat block;
+            block = screen(cv::Rect(j, i, tileWidth, tileHeight));
+
+            for (int x = 0; x < block.rows; x++) {
+                for (int y = 0; y < block.cols; y++) {
+                    color += block.at<Vec3b>(x, y)[planeSelected];
+                }
+            }
+
+
+            color /= ((float) tileWidth * (float) tileHeight);
+            tiles.at<int>(i / tileHeight, j / tileWidth) = (int) color;
+        }
+    }
+
+    return tiles;
 }
 
 void pressKey(CGKeyCode keyCode){
@@ -193,7 +242,6 @@ void pressKey(CGKeyCode keyCode){
     CFRelease(keyup);
     CFRelease(source);
 }
-
 
 void pressButton(int i) {
     CGKeyCode button;
@@ -234,7 +282,6 @@ void pressButton(int i) {
 
     pressKey(button);
 }
-
 
 Mat getScreen(){
     CGDisplayCount displayCount;
@@ -462,75 +509,6 @@ int getFitness(Mat screen, vector<Mat> sprites) {
     return fitness;
 }
 
-
-
-//create a map of the tiles by the averages of the colors in blocks
-Mat getAveragesColor(Mat screen) {
-    int height = screen.rows;
-    int width = screen.cols;
-    int tileHeight = 24;
-    int tileWidth = 32;
-
-    Mat tiles = Mat(height / tileHeight, width / tileWidth, CV_32S);
-
-    for (int i = 0; i < (height / tileHeight) * tileHeight; i += tileHeight) {
-        for (int j = 0; j < (width / tileWidth) * tileWidth; j += tileWidth) {
-
-            //get the sum of all the colors of the block in the 3 planes in order to get the average
-            float color = 0;
-            for (int k = 0; k < 3; k++) {
-                //get 8x8 block from image from (j,i) coordinates
-                Mat block;
-                block = screen(cv::Rect(j, i, tileWidth, tileHeight));
-
-                for (int x = 0; x < block.rows; x++){
-                    for (int y = 0; y < block.cols; y++){
-                        color += block.at<Vec3b>(x,y)[k];
-                    }
-                }
-            }
-
-            color /= (3.0f*(float)tileWidth*(float)tileHeight);
-            tiles.at<int>(i / tileHeight, j / tileWidth) = (int)color;
-        }
-    }
-
-    return tiles;
-}
-
-Mat getAveragesBnW(Mat screen) {
-    int height = screen.rows;
-    int width = screen.cols;
-    int tileHeight = 24;
-    int tileWidth = 32;
-    int planeSelected = 1;
-
-    Mat tiles = Mat(height / tileHeight, width / tileWidth, CV_32S);
-
-    for (int i = 0; i < (height / tileHeight) * tileHeight; i += tileHeight) {
-        for (int j = 0; j < (width / tileWidth) * tileWidth; j += tileWidth) {
-
-            //get the sum of all the colors of the block in the 3 planes in order to get the average
-            float color = 0;
-            //get 8x8 block from image from (j,i) coordinates
-            Mat block;
-            block = screen(cv::Rect(j, i, tileWidth, tileHeight));
-
-            for (int x = 0; x < block.rows; x++) {
-                for (int y = 0; y < block.cols; y++) {
-                    color += block.at<Vec3b>(x, y)[planeSelected];
-                }
-            }
-
-
-            color /= ((float) tileWidth * (float) tileHeight);
-            tiles.at<int>(i / tileHeight, j / tileWidth) = (int) color;
-        }
-    }
-
-    return tiles;
-}
-
 void getSprites(vector<Mat>& sprites, char* location){
     DIR *dir;
     struct dirent *ent;
@@ -576,6 +554,18 @@ Mat scaleUp(Mat image, int scale){
     return image;
 }
 
+
+
+void savePool(Pool pool, char* location){
+
+
+
+
+    // put object to file with indentation (setw(4)) not in just 1 line
+    ofstream file(location);
+    file << setw(4) << json_object << endl;
+}
+
 /*
 226 pared y puntos
 209-208 jugador
@@ -593,9 +583,10 @@ Mat scaleUp(Mat image, int scale){
 int main( int argc, char** argv ) {
 
 
-    vector<Mat> sprites;
+    vector<Mat> sprites;       // collect the sprites for fitness
     char* startLocation = "../Images/fitness/";
     getSprites(sprites, startLocation);
+
     Pool pool;
 
     //infinite Exit loop
@@ -620,6 +611,10 @@ int main( int argc, char** argv ) {
             if (keyPressed == 27) {
                 return 0;
             }
+            else if (keyPressed == 102) { // if S is pressed
+                sleep(1);
+            }
+
 
             Mat screen = getScreen();
 
