@@ -555,86 +555,6 @@ Mat scaleUp(Mat image, int scale){
 }
 
 
-
-void savePool(Pool pool, string location){
-    string poolStr = "{ \"pool\": {";
-
-    int i = 0;
-    for (Species s : pool.getSpecies()){
-        string speciesStr = "\"species"+ to_string(i) +"\": {";
-        i++;
-
-        int j = 0;
-        for (Genome *g : s.getGenomes()){
-            string genomeStr = "\"genome"+ to_string(j) +"\": {";
-            j++;
-
-            int k = 0;
-            for (Gene *gene: g->getGenes()){
-                string geneStr = "\"gene"+ to_string(k) +"\": {";
-                k++;
-
-                geneStr += "\"into\": " + to_string(gene->getInto()) + ", ";
-                geneStr += "\"out\": " + to_string(gene->getOut()) + ", ";
-                geneStr += "\"weight\": " + to_string(gene->getWeight()) + ", ";
-                geneStr += "\"enabled\": " + to_string(gene->isEnabled()) + ", ";
-                geneStr += "\"innovation\": " + to_string(gene->getInnovation());
-
-                geneStr += "}, ";
-
-                genomeStr += geneStr;
-            }
-
-            genomeStr += "\"lastNeuronCreated\": " + to_string(g->getLastNeuronCreated());
-
-            genomeStr += "}, ";
-
-            speciesStr += genomeStr;
-        }
-
-        speciesStr += "\"staleness\": " + to_string(s.getStaleness());
-
-        speciesStr += "}, ";
-
-
-        poolStr += speciesStr;
-    }
-
-    poolStr += "\"generation\": " + to_string(pool.getGeneration()) + ", ";
-    poolStr += "\"currentSpecies\": " + to_string(pool.getCurrentSpecies()) + ", ";
-    poolStr += "\"currentGenome\": " + to_string(pool.getCurrentGenome()) + ", ";
-    poolStr += "\"ScreenHeight\": " + to_string(Pool::ScreenHeight) + ", ";
-    poolStr += "\"ScreenWidth\": " + to_string(Pool::ScreenWidth) + ", ";
-    poolStr += "\"INPUT_SIZE\": " + to_string(Pool::INPUT_SIZE) + ", ";
-    poolStr += "\"OUTPUT_SIZE\": " + to_string(Pool::OUTPUT_SIZE) + ", ";
-    poolStr += "\"POPULATION\": " + to_string(Pool::POPULATION) + ", ";
-    poolStr += "\"DELTA_DISJOINT\": " + to_string(Pool::DELTA_DISJOINT) + ", ";
-    poolStr += "\"DELTA_WEIGHTS\": " + to_string(Pool::DELTA_WEIGHTS) + ", ";
-    poolStr += "\"DELTA_THRESHOLD\": " + to_string(Pool::DELTA_THRESHOLD) + ", ";
-    poolStr += "\"STALE_SPECIES\": " + to_string(Pool::STALE_SPECIES) + ", ";
-    poolStr += "\"PerturbChance\": " + to_string(Pool::PerturbChance) + ", ";
-    poolStr += "\"CrossoverChance\": " + to_string(Pool::CrossoverChance) + ", ";
-    poolStr += "\"ConnMutateChance\": " + to_string(Pool::ConnMutateChance) + ", ";
-    poolStr += "\"LinkMutateChance\": " + to_string(Pool::LinkMutateChance) + ", ";
-    poolStr += "\"NodeMutateChance\": " + to_string(Pool::NodeMutateChance) + ", ";
-    poolStr += "\"BiasMutateChance\": " + to_string(Pool::BiasMutateChance) + ", ";
-    poolStr += "\"EnableMutateChance\": " + to_string(Pool::EnableMutateChance) + ", ";
-    poolStr += "\"DisableMutateChance\": " + to_string(Pool::DisableMutateChance) + ", ";
-    poolStr += "\"StepSize\": " + to_string(Pool::StepSize) + ", ";
-    poolStr += "\"TIMEOUT_CONSTANT\": " + to_string(Pool::TIMEOUT_CONSTANT) + ", ";
-    poolStr += "\"MaxNodes\": " + to_string(Pool::MaxNodes) + ", ";
-    poolStr += "\"EnableMutateChance\": " + to_string(Pool::EnableMutateChance);
-
-
-    poolStr += "}}";
-
-    json poolJson = json::parse(poolStr);
-
-    // put object to file with indentation (setw(4)) not in just 1 line
-    ofstream file(location);
-    file << setw(4) << poolJson << endl;
-}
-
 /*
 226 pared y puntos
 209-208 jugador
@@ -670,6 +590,8 @@ int main( int argc, char** argv ) {
 
     char* startLocation = "../Images/fitness/";
     string saveLocation = "../Saves/"+getDate()+".json";
+    string loadLocation = "../Saves/18:2:2018_17-38-52.json";
+    bool poolFromFile = false;
 
     vector<Mat> sprites;       // collect the sprites for fitness
     getSprites(sprites, startLocation);
@@ -689,9 +611,10 @@ int main( int argc, char** argv ) {
 
         cout << "Generating Network!" << endl;
 
-        pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()]->generateNetwork();
-        savePool(pool, saveLocation);
-
+        if (poolFromFile){
+            pool.loadPool(loadLocation);
+        }
+        else pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()]->generateNetwork();
 
         while (!dead) {
             int keyPressed = waitKeyEx(50);
@@ -750,10 +673,9 @@ int main( int argc, char** argv ) {
             pressButton(buttonToPress);
         }
 
-        pool.nextGenome();
+        pool.nextGenome(saveLocation);
 
-        // save pool in file location
-        savePool(pool, saveLocation);
+
     }
 
 

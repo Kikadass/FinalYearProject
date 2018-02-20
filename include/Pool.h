@@ -7,13 +7,13 @@
 
 #include "Species.h"
 
+
 class Pool {
 private:
     vector<Species> species;
     int generation;
     int currentSpecies;
     int currentGenome;
-    int currentFrame;
     int maxFitness;
     int averageFitness;
 
@@ -51,6 +51,10 @@ public:
 
     Pool();
 
+    void loadPool(string loadLocation);
+
+    void savePool(string location);
+
     vector<Species> &getSpecies();
 
     int getGeneration();
@@ -73,13 +77,14 @@ public:
 
     double weights(vector<Gene*> genes1, vector<Gene*> genes2);
 
-    void nextGenome();
+    void nextGenome(string saveLocation);
 
     void newGeneration();
 
     void cullSpecies(bool cutToOne);
 
     void rankGlobally();
+
 };
 
 

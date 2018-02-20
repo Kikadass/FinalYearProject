@@ -2,7 +2,11 @@
 // Created by Kike Piera Serra on 08/01/2018.
 //
 
+#include <fstream>
 #include "Pool.h"
+#include "../nlohmann/json.hpp"
+
+using json = nlohmann::json;
 
 
 int Pool::ScreenHeight = 16;
@@ -39,7 +43,6 @@ Pool::Pool() {
     generation = 0;
     currentSpecies = 0;
     currentGenome = 0;
-    currentFrame = 0;
     maxFitness = 0;
 
     for (int i = 0; i < Pool::POPULATION; i++) {
@@ -47,6 +50,211 @@ Pool::Pool() {
         basic->firstGenome();
         addToSpecies(basic);
     }
+}
+
+void Pool::loadPool(string loadLocation) {
+    ifstream i(loadLocation);
+    json pool;
+    i >> pool;
+
+    cout << pool << endl;
+
+    pool = pool.at("pool").get<json>();
+    cout << pool << endl;
+
+    generation = pool.at("generation").get<int>();
+    currentSpecies = pool.at("currentSpecies").get<int>();
+    currentGenome = pool.at("currentGenome").get<int>();
+    ScreenHeight = pool.at("ScreenHeight").get<int>();
+    ScreenWidth = pool.at("ScreenWidth").get<int>();
+    INPUT_SIZE = pool.at("INPUT_SIZE").get<int>();
+    OUTPUT_SIZE = pool.at("OUTPUT_SIZE").get<int>();
+    POPULATION = pool.at("POPULATION").get<int>();
+    DELTA_DISJOINT = pool.at("DELTA_DISJOINT").get<double>();
+    DELTA_WEIGHTS = pool.at("DELTA_WEIGHTS").get<double>();
+    DELTA_THRESHOLD = pool.at("DELTA_THRESHOLD").get<double>();
+    STALE_SPECIES = pool.at("STALE_SPECIES").get<int>();
+    PerturbChance = pool.at("PerturbChance").get<double>();
+    CrossoverChance = pool.at("CrossoverChance").get<double>();
+    ConnMutateChance = pool.at("ConnMutateChance").get<double>();
+    LinkMutateChance = pool.at("LinkMutateChance").get<double>();
+    NodeMutateChance = pool.at("NodeMutateChance").get<double>();
+    BiasMutateChance = pool.at("BiasMutateChance").get<double>();
+    EnableMutateChance = pool.at("EnableMutateChance").get<double>();
+    DisableMutateChance = pool.at("DisableMutateChance").get<double>();
+    StepSize = pool.at("StepSize").get<double>();
+    MaxNodes = pool.at("MaxNodes").get<int>();
+
+    vector<Species> newSpecies;
+
+    int x = 0;
+    string s = "species" + to_string(x);
+    int countS = pool.count(s);
+    for (int x = 1; countS > 0; x++){
+        json species = pool.at(s);
+        cout << species << endl;
+
+        vector<Genome*> children;
+
+        int y = 0;
+        string G = "genome" + to_string(y);
+        int countG = species.count(G);
+        for (int y = 1; countG > 0; y++){
+            json genome = species.at(G);
+
+            vector<Gene*> genes;
+
+            int z = 0;
+            string g = "gene" + to_string(z);
+            int countg = genome.count(g);
+            for (int z = 1; countg > 0; z++){
+                json gene = genome.at(g);
+
+                int into = gene.at("into").get<int>();
+                int out = gene.at("out").get<int>();
+                double weight = gene.at("weight").get<double>();
+                bool enabled = gene.at("enabled").get<int>();
+                int innovation = gene.at("innovation").get<int>();
+
+                Gene * newGene = new Gene(into, out, weight, enabled, innovation);
+
+                genes.push_back(newGene);
+
+                // prepare for next iteration
+                g = "gene" + to_string(z);
+                countg = genome.count(g);
+            }
+
+
+            int lastNeuronCreated = genome.at("lastNeuronCreated").get<int>();
+
+
+            json mR = genome.at("mutationRates");
+
+            MutationRates mutationRates;
+            mutationRates.connections = mR.at("connections").get<double>();
+            mutationRates.link = mR.at("link").get<double>();
+            mutationRates.bias = mR.at("bias").get<double>();
+            mutationRates.node = mR.at("node").get<double>();
+            mutationRates.enable = mR.at("enable").get<double>();
+            mutationRates.disable = mR.at("disable").get<double>();
+            mutationRates.step = mR.at("step").get<double>();
+
+            Genome* newGenome = new Genome(genes, 0, 0, lastNeuronCreated, 0, mutationRates);
+            children.push_back(newGenome);
+
+            // prepare for next iteration
+            G = "genome" + to_string(y);
+            countG = species.count(G);
+        }
+
+
+        Species childSpecies = Species(children);
+        childSpecies.setStaleness(species.at("staleness").get<int>());
+
+        newSpecies.push_back(childSpecies);
+
+        // prepare for next iteration
+        s = "species" + to_string(x);
+        countS = pool.count(s);
+    }
+
+    this->species = newSpecies;
+}
+
+void Pool::savePool(string location){
+    string poolStr = "{ \"pool\": {";
+
+    int i = 0;
+    for (Species s : species){
+        string speciesStr = "\"species"+ to_string(i) +"\": {";
+        i++;
+
+        int j = 0;
+        for (Genome *g : s.getGenomes()){
+            string genomeStr = "\"genome"+ to_string(j) +"\": {";
+            j++;
+
+            int k = 0;
+            for (Gene *gene: g->getGenes()){
+                string geneStr = "\"gene"+ to_string(k) +"\": {";
+                k++;
+
+                geneStr += "\"into\": " + to_string(gene->getInto()) + ", ";
+                geneStr += "\"out\": " + to_string(gene->getOut()) + ", ";
+                geneStr += "\"weight\": " + to_string(gene->getWeight()) + ", ";
+                geneStr += "\"enabled\": " + to_string(gene->isEnabled()) + ", ";
+                geneStr += "\"innovation\": " + to_string(gene->getInnovation());
+
+                geneStr += "}, ";
+
+                genomeStr += geneStr;
+            }
+
+
+
+            MutationRates mR= g->getMutationRates();
+            string mutationRatesStr = "\"mutationRates\": {";
+            mutationRatesStr += "\"connections\": " + to_string(mR.connections) + ", ";
+            mutationRatesStr += "\"link\": " + to_string(mR.link) + ", ";
+            mutationRatesStr += "\"bias\": " + to_string(mR.bias) + ", ";
+            mutationRatesStr += "\"node\": " + to_string(mR.node) + ", ";
+            mutationRatesStr += "\"enable\": " + to_string(mR.enable) + ", ";
+            mutationRatesStr += "\"disable\": " + to_string(mR.disable) + ", ";
+            mutationRatesStr += "\"step\": " + to_string(mR.step);
+
+            mutationRatesStr += "}, ";
+
+            genomeStr += mutationRatesStr;
+
+            genomeStr += "\"lastNeuronCreated\": " + to_string(g->getLastNeuronCreated());
+
+            genomeStr += "}, ";
+
+            speciesStr += genomeStr;
+        }
+
+        speciesStr += "\"staleness\": " + to_string(s.getStaleness());
+
+        speciesStr += "}, ";
+
+
+        poolStr += speciesStr;
+    }
+
+    poolStr += "\"generation\": " + to_string(generation) + ", ";
+    poolStr += "\"currentSpecies\": " + to_string(currentSpecies) + ", ";
+    poolStr += "\"currentGenome\": " + to_string(currentGenome) + ", ";
+    poolStr += "\"ScreenHeight\": " + to_string(Pool::ScreenHeight) + ", ";
+    poolStr += "\"ScreenWidth\": " + to_string(Pool::ScreenWidth) + ", ";
+    poolStr += "\"INPUT_SIZE\": " + to_string(Pool::INPUT_SIZE) + ", ";
+    poolStr += "\"OUTPUT_SIZE\": " + to_string(Pool::OUTPUT_SIZE) + ", ";
+    poolStr += "\"POPULATION\": " + to_string(Pool::POPULATION) + ", ";
+    poolStr += "\"DELTA_DISJOINT\": " + to_string(Pool::DELTA_DISJOINT) + ", ";
+    poolStr += "\"DELTA_WEIGHTS\": " + to_string(Pool::DELTA_WEIGHTS) + ", ";
+    poolStr += "\"DELTA_THRESHOLD\": " + to_string(Pool::DELTA_THRESHOLD) + ", ";
+    poolStr += "\"STALE_SPECIES\": " + to_string(Pool::STALE_SPECIES) + ", ";
+    poolStr += "\"PerturbChance\": " + to_string(Pool::PerturbChance) + ", ";
+    poolStr += "\"CrossoverChance\": " + to_string(Pool::CrossoverChance) + ", ";
+    poolStr += "\"ConnMutateChance\": " + to_string(Pool::ConnMutateChance) + ", ";
+    poolStr += "\"LinkMutateChance\": " + to_string(Pool::LinkMutateChance) + ", ";
+    poolStr += "\"NodeMutateChance\": " + to_string(Pool::NodeMutateChance) + ", ";
+    poolStr += "\"BiasMutateChance\": " + to_string(Pool::BiasMutateChance) + ", ";
+    poolStr += "\"EnableMutateChance\": " + to_string(Pool::EnableMutateChance) + ", ";
+    poolStr += "\"DisableMutateChance\": " + to_string(Pool::DisableMutateChance) + ", ";
+    poolStr += "\"StepSize\": " + to_string(Pool::StepSize) + ", ";
+    poolStr += "\"TIMEOUT_CONSTANT\": " + to_string(Pool::TIMEOUT_CONSTANT) + ", ";
+    poolStr += "\"MaxNodes\": " + to_string(Pool::MaxNodes) + ", ";
+    poolStr += "\"EnableMutateChance\": " + to_string(Pool::EnableMutateChance);
+
+
+    poolStr += "}}";
+
+    json poolJson = json::parse(poolStr);
+
+    // put object to file with indentation (setw(4)) not in just 1 line
+    ofstream file(location);
+    file << setw(4) <<  poolJson << endl;
 }
 
 void Pool::calculateFitness() {
@@ -202,7 +410,7 @@ void Pool::addToSpecies(Genome* child) {
     }
 }
 
-void Pool::nextGenome(){
+void Pool::nextGenome(string saveLocation){
 
     currentGenome++;
 
@@ -220,6 +428,8 @@ void Pool::nextGenome(){
             currentSpecies = 0;
             // TODO:: mutate, crossover etc+
             newGeneration();
+            // save pool in file location
+            savePool(saveLocation);
         }
     }
 }
@@ -321,4 +531,6 @@ int Pool::getCurrentGenome() {
 vector<Species> &Pool::getSpecies() {
     return species;
 }
+
+
 
