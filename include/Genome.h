@@ -48,6 +48,8 @@ public:
     void firstGenome();
     void generateNetwork();
     int evaluateNetwork(vector<double> inputs);
+    void evaluateNetworkToFile(vector<double> inputs);
+
 
 
 private:
@@ -72,6 +74,7 @@ private:
     void showGene(int iterations, int neuron);
 
     double evaluateNeuron(int neuron);
+
 };
 
 

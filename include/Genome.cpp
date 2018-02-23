@@ -2,8 +2,10 @@
 // Created by Kike Piera Serra on 08/01/2018.
 //
 
+#include <fstream>
 #include "Genome.h"
 #include "Pool.h"
+
 bool Debug = false;
 
 Genome::Genome(){
@@ -343,6 +345,53 @@ void Genome::generateNetwork() {
     }
 }
 
+
+void Genome::evaluateNetworkToFile(vector<double> inputs) {
+    if (inputs.size() != Pool::INPUT_SIZE) {
+        string errorMsg = "INCORRECT NUMBER OF INPUTS\n";
+        errorMsg += "Inputs expected: " + Pool::INPUT_SIZE;
+        errorMsg += "\nInputs received: " + inputs.size();
+        errorMsg += "\n";
+        throw runtime_error(errorMsg);
+    }
+
+    // inputting the tile values into the "input layer"
+    for (int i = 0; i < Pool::INPUT_SIZE; i++) {
+        network[i].setValue(inputs[i]);
+    }
+
+    map<int, Neuron2>::const_iterator i = network.end();
+    for (int x = 0; x < Pool::OUTPUT_SIZE; x++) {
+        i--;
+        evaluateNeuron(i->first);
+    }
+
+
+    //check which buttons are true and which are false
+    int pressedButtons[3] = {false, false, false};
+    for (int i = 0; i < Pool::OUTPUT_SIZE; i++) {
+        if (network[Pool::MaxNodes + i].getValue() > 0.5) {
+            pressedButtons[i] = true;
+        }
+    }
+
+    // write to file
+    ofstream myfile;
+    string file = "../../AI-SpaceInvaders/Buttons.txt";
+    myfile.open (file);
+    if (!myfile.is_open()){
+        throw runtime_error("Unable to open the file: "+ file);
+    }
+
+    myfile << pressedButtons[0];
+    myfile << "\n";
+    myfile << pressedButtons[1];
+    myfile << "\n";
+    myfile << pressedButtons[2];
+    myfile.close();
+
+    showGenome();
+}
 
 int Genome::evaluateNetwork(vector<double> inputs) {
     if (inputs.size() != Pool::INPUT_SIZE) {

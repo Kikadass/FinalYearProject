@@ -15,7 +15,7 @@ int Pool::ScreenWidth = 20;
 int Pool::INPUT_SIZE = ScreenHeight*ScreenWidth;
 
 //number of buttons
-int Pool::OUTPUT_SIZE = 4;
+int Pool::OUTPUT_SIZE = 3;
 
 int Pool::POPULATION = 10;
 double Pool::DELTA_DISJOINT = 2.0;
