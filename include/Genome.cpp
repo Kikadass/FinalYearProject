@@ -388,6 +388,8 @@ void Genome::evaluateNetworkToFile(vector<double> inputs) {
     myfile << pressedButtons[1];
     myfile << "\n";
     myfile << pressedButtons[2];
+    myfile << "\n";
+    myfile << "Finished!";
     myfile.close();
 
     showGenome();

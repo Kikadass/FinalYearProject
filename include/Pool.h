@@ -10,12 +10,12 @@
 
 class Pool {
 private:
-    vector<Species> species;
+    vector<Genome*> genomes;
     int generation;
-    int currentSpecies;
     int currentGenome;
     int maxFitness;
     int averageFitness;
+    int nBest;
 
 public:
     static int ScreenHeight;
@@ -55,23 +55,15 @@ public:
 
     void savePool(string location);
 
-    vector<Species> &getSpecies();
+    vector<Genome*> &getGenomes();
 
     int getGeneration();
-
-    int getCurrentSpecies();
 
     int getCurrentGenome();
 
     void calculateFitness();
 
-    void removeStaleSpecies();
-
-    void removeWeakSpecies();
-
-    void addToSpecies(Genome* child);
-
-    bool sameSpecies(Genome* genome1, Genome* genome2);
+    void addToGenome(Genome* child);
 
     double disjoint(vector<Gene*> genes1, vector<Gene*> genes2);
 
@@ -81,10 +73,13 @@ public:
 
     void newGeneration();
 
-    void cullSpecies(bool cutToOne);
+    void cullSpecies(bool keepBest);
 
     void rankGlobally();
 
+    Genome *crossover(Genome *g1, Genome *g2);
+
+    Genome *breedChild();
 };
 
 

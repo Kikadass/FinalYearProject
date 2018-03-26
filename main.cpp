@@ -437,44 +437,51 @@ Mat getTiles(Mat screen, vector<Mat> sprites, int& originalNPoints, int& points)
     return tiles;
 }
 
-bool checkScoreFile(){
-    string file = "../../AI-SpaceInvaders/Score.txt";
-    ifstream myfile;
-    myfile.open(file);
+bool checkScoreFile(string scoresFileName, string tilesFileName){
+    ifstream scoresFile;
+    ifstream tilesFile;
+    int maxTime = 10*CLOCKS_PER_SEC; //10s
+    clock_t start = clock();
+    string line = "";
 
-    bool opened = myfile.is_open();
+    bool scoresFound = false;
 
-    if (opened) myfile.close();
+    do {
+        do {
+            tilesFile.open(tilesFileName);
+            if (clock() - start > maxTime) {
+                throw runtime_error(
+                        "The file has not appeared in 10s. Game is going to end here. File location: " + tilesFileName);
+            }
 
-    return opened;
+        } while (!tilesFile.is_open());
+
+        // get the last line
+        while (getline(tilesFile, line));
+
+        tilesFile.close();
+
+        // if line == Finished! compare will return false (0)
+    }while (line.compare("Finished!"));
+
+    scoresFile.open(scoresFileName);
+
+    scoresFound = scoresFile.is_open();
+
+    if (scoresFound) scoresFile.close();
+
+    return scoresFound;
 }
 
-
-Mat getTilesFromFile(){
-    string file = "../../AI-SpaceInvaders/tiles.txt";
+Mat getTilesFromFile(string file){
     ifstream myfile;
     string line;
     Mat tiles = Mat(Pool::ScreenHeight, Pool::ScreenWidth, CV_32F);
 
-
-    int maxTime = 10*CLOCKS_PER_SEC; //10s
-    clock_t start = clock();
-    do{
-
-        myfile.open (file);
-        if (checkScoreFile()) return tiles;
-
-        if (clock() - start > maxTime){
-            throw runtime_error("The file has not appeared in 10s. Game is going to end here. File location: " + file);
-        }
-    } while (!myfile.is_open());
-
-    myfile.close();
-    usleep(2000); //10ms sleep
     myfile.open (file);
-
     int y = 0;
-    while (getline(myfile, line)){
+    // if line == Finished! compare will return false (0)
+    while (getline(myfile, line) && line.compare("Finished!")){
         string number = "";
 
         int x = 0;
@@ -496,14 +503,12 @@ Mat getTilesFromFile(){
         y++;
     }
 
-
     myfile.close();
 
 
     //delete file
     std::remove(file.c_str());
 
-    cout << tiles << endl;
     return tiles;
 }
 
@@ -672,9 +677,6 @@ int main( int argc, char** argv ) {
     //infinite Exit loop
     while(1) {
         bool dead = false;
-        int originalNPoints = -1;
-        int points = 0; // fitness
-        int timeout = Pool::TIMEOUT_CONSTANT;
 
         if (gameFromScreen) {
             pressButton(7);
@@ -686,7 +688,7 @@ int main( int argc, char** argv ) {
         if (poolFromFile){
             pool.loadPool(loadLocation);
         }
-        else pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()]->generateNetwork();
+        else pool.getGenomes()[pool.getCurrentGenome()]->generateNetwork();
 
         while (!dead) {
             Mat tiles;
@@ -716,7 +718,7 @@ int main( int argc, char** argv ) {
                     int fitness = getFitness(screen, sprites);
 
                     dead = true;
-                    pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()]->setFitness(fitness);
+                    pool.getGenomes()[pool.getCurrentGenome()]->setFitness(fitness);
 
                     continue;
                 }
@@ -731,13 +733,11 @@ int main( int argc, char** argv ) {
                 scaleUp(saveTiles, 20);
             }
             else {
-                tiles = getTilesFromFile();
-
-
-                if (checkScoreFile()){
-                    string file = "../../AI-SpaceInvaders/Score.txt";
+                string scoresFileName = "../../AI-SpaceInvaders/Score.txt";
+                string tilesFileName = "../../AI-SpaceInvaders/tiles.txt";
+                if (checkScoreFile(scoresFileName, tilesFileName)){
                     ifstream myfile;
-                    myfile.open(file);
+                    myfile.open(scoresFileName);
 
                     dead = true;
                     string line;
@@ -748,12 +748,16 @@ int main( int argc, char** argv ) {
                     myfile.close();
 
                     //delete file
-                    std::remove(file.c_str());
+                    std::remove(scoresFileName.c_str());
 
-                    pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()]->setFitness(fitness);
+                    pool.getGenomes()[pool.getCurrentGenome()]->setFitness(fitness);
 
                     continue;
                 }
+
+                tiles = getTilesFromFile(tilesFileName);
+
+
             }
 
 
@@ -761,7 +765,7 @@ int main( int argc, char** argv ) {
             //create array of inputs
             vector<double> inputs;
 
-            cout << "Current Generation: " << pool.getGeneration() << "  Current Species: " << pool.getCurrentSpecies() << "  Current Genome: " << pool.getCurrentGenome() << endl;
+            cout << "Current Generation: " << pool.getGeneration() << " Current Genome: " << pool.getCurrentGenome() << endl;
             for (int i = 0; i < tiles.rows; i++){
                 for (int j = 0; j < tiles.cols; j++){
                     double tile = tiles.at<double>(i, j);
@@ -771,70 +775,16 @@ int main( int argc, char** argv ) {
 
 
             if (gameFromScreen){
-                int buttonToPress = pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()]->evaluateNetwork(inputs);
+                int buttonToPress = pool.getGenomes()[pool.getCurrentGenome()]->evaluateNetwork(inputs);
                 pressButton(buttonToPress);
             }
             else {
-                pool.getSpecies()[pool.getCurrentSpecies()].getGenomes()[pool.getCurrentGenome()]->evaluateNetworkToFile(inputs);
+                pool.getGenomes()[pool.getCurrentGenome()]->evaluateNetworkToFile(inputs);
             }
         }
 
         pool.nextGenome(saveLocation);
     }
-
-
-    /* SIMPLE AI
-
-    srand(time(nullptr));
-    //srand(0);
-
-    TrainingData trainData;
-
-    vector<double> topology;
-    trainData.getTopology(topology);
-
-
-    Net myNet(topology);
-
-
-
-    vector<double> inputs;
-    vector<double> targets;
-    vector<double> results;
-
-
-    for (int i = 0; i < 1000; i++){
-        cout << endl << "Pass "<< i;
-
-        // Get new inputs data and feed it forward;
-        inputs.clear();
-        if (trainData.getNextInputs(inputs) != topology[0]){
-            break;
-        }
-
-        showVector(": Inputs:", inputs);
-        myNet.feedForward(inputs);
-
-
-        //Collect the net's actual results
-        myNet.getResults(results);
-        showVector("Outputs:", results);
-
-
-        //Train the net what the ouputs should have been
-        trainData.getTargetOutputs(targets);
-        showVector("Targets:", targets);
-
-        assert(targets.size() == topology.back());
-
-        myNet.backProp(targets);
-
-        //Report how well the training is working. averaged over recent...
-        cout << "Net recent average error: " << myNet.getRecentAverageError() << endl;
-    }
-
-*/
-
 
 
     cout << "DONE" << endl;
