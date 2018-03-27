@@ -164,6 +164,10 @@ void Genome::linkMutate(bool forceBias) {
     double weight;
     bool enabled = true;
 
+    if (forceBias) {
+        neuron1 = Pool::INPUT_SIZE;
+    }
+
     if (neuron1 <= Pool::INPUT_SIZE && neuron2 <= Pool::INPUT_SIZE) {
         //Both input nodes
         // cout << "No new gene created" << endl;
@@ -183,9 +187,7 @@ void Genome::linkMutate(bool forceBias) {
 
     into = neuron1;
     out = neuron2;
-    if (forceBias) {
-        into = Pool::INPUT_SIZE;
-    }
+
 
     weight = (rand()%11)/10 * 4 - 2;
 

@@ -350,8 +350,12 @@ void Pool::newGeneration() {
     vector<Genome*> children;
 
     // add
-    for (int s = 0; s < genomes.size(); s++) {
-        double average = (double)genomes[s]->getFitness()/(double)averageFitness;
+    for (int g = 0; g < genomes.size(); g++) {
+        double average = 0;
+
+        // avoid having NaN
+        if (averageFitness > 0) average = (double)genomes[g]->getFitness()/(double)averageFitness;
+
         int breed = round(average);
 
 
@@ -360,7 +364,7 @@ void Pool::newGeneration() {
         }
     }
 
-    cullSpecies(true); // Cull all but the top member of each species
+    cullSpecies(true); // Cull all but the top members of each species
 
 
     while (children.size() + genomes.size() < Pool::POPULATION) {
