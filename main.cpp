@@ -390,7 +390,6 @@ Mat getTiles(Mat screen, vector<Mat> sprites, int& originalNPoints, int& points)
                 if (averageErrorBnW(sprites[k], block) < aeBnW) {
                     mostSimilar = k;
                     aeBnW = averageErrorBnW(sprites[k], block);
-                    //absdiff();
                     if (averageErrorBnW(sprites[k], block) < 500) {
                         spriteFound = true;
                     }

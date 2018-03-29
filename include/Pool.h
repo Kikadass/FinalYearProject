@@ -13,9 +13,11 @@ private:
     vector<Genome*> genomes;
     int generation;
     int currentGenome;
-    int maxFitness;
-    int averageFitness;
+    vector<int> maxFitness;
+    vector<int> averageFitness;
+    vector<int> totalFitness;
     int nBest;
+    int nSurvivors;
 
 public:
     static int ScreenHeight;
@@ -63,23 +65,21 @@ public:
 
     void calculateFitness();
 
-    void addToGenome(Genome* child);
-
-    double disjoint(vector<Gene*> genes1, vector<Gene*> genes2);
-
-    double weights(vector<Gene*> genes1, vector<Gene*> genes2);
-
     void nextGenome(string saveLocation);
 
     void newGeneration();
 
     void cullSpecies(bool keepBest);
 
-    void rankGlobally();
-
     Genome *crossover(Genome *g1, Genome *g2);
 
     Genome *breedChild();
+
+    vector<Genome*> rouletteSelection();
+
+    vector<Genome *> eliteSelection();
+
+    vector<Genome *> copyGenomes();
 };
 
 

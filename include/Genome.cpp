@@ -24,13 +24,12 @@ Genome::Genome(){
     mutationRates.step = Pool::StepSize;
 }
 
-Genome::Genome(vector<Gene*> genes/*, map<int, Neuron2> network*/, int fitness, int adjustedFitness, int lastNeuronCreated, int globalRank, MutationRates mutationRates){
+Genome::Genome(vector<Gene*> genes, int fitness, int adjustedFitness, int lastNeuronCreated, int globalRank, MutationRates mutationRates){
     // copy genes but creating new pointers
     for (Gene* g : genes){
         Genome::genes.push_back(new Gene(g->getInto(), g->getOut(), g->getWeight(), g->isEnabled(), g->getInnovation()));
     }
 
-    //Genome::network = network;
     Genome::fitness = fitness;
     Genome::adjustedFitness = adjustedFitness;
     Genome::lastNeuronCreated = lastNeuronCreated;

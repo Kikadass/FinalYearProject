@@ -17,7 +17,7 @@ int Pool::INPUT_SIZE = ScreenHeight*ScreenWidth;
 //number of buttons
 int Pool::OUTPUT_SIZE = 3;
 
-int Pool::POPULATION = 10;
+int Pool::POPULATION = 20;
 double Pool::DELTA_DISJOINT = 2.0;
 double Pool::DELTA_WEIGHTS = 0.4;
 double Pool::DELTA_THRESHOLD = 1.0;
@@ -42,8 +42,8 @@ int Pool::MaxNodes = 1000000;
 Pool::Pool() {
     generation = 0;
     currentGenome = 0;
-    maxFitness = 0;
     nBest = 5;
+    nSurvivors = Pool::POPULATION/2;
 
     for (int i = 0; i < Pool::POPULATION; i++) {
         Genome* basic = new Genome();
@@ -236,9 +236,10 @@ void Pool::calculateFitness() {
         total += genomeFitness;
     }
 
-    maxFitness = max;
+    maxFitness.push_back(max);
 
-    averageFitness = total/genomes.size();
+    averageFitness.push_back(total/genomes.size());
+    totalFitness.push_back(total);
 }
 
 bool isLhsFitnessBigger(Genome* a, Genome* b) { return a->getFitness() > b->getFitness(); }
@@ -334,19 +335,78 @@ Genome* Pool::breedChild() {
         child = new Genome(genome.getGenes(), genome.getFitness(), genome.getAdjustedFitness(), genome.getLastNeuronCreated(), genome.getGlobalRank(), genome.getMutationRates());
     }
 
-    child->mutate();
-
     return child;
 }
 
+vector<Genome*> Pool::copyGenomes(){
+    vector<Genome*> copy;
+    for (Genome* g: genomes){
+        copy.push_back(new Genome(g->getGenes(), g->getFitness(), g->getAdjustedFitness(), g->getLastNeuronCreated(), g->getGlobalRank(), g->getMutationRates()));
+    }
 
-// remove the bottom half of the genomes of each species
-// remove
-void Pool::newGeneration() {
-    cullSpecies(false); // Cull the bottom half of each species
+    return copy;
+}
 
-    sort(genomes.begin(), genomes.end(), isLhsFitnessBigger);
+vector<Genome*> Pool::rouletteSelection(){
+    // total fitness of the last generation
+    float totalFitness = this->totalFitness[generation];
 
+    // sum of all remaining genomes' survivingChance
+    float totalChance = 100;
+
+    vector<Genome*> survivingGenomes;
+
+    //array of genomes not chosen for survival
+    vector<Genome*> genomesArray = copyGenomes();
+
+    // if total fitness is 0, all genomes have 0 chance of survival.
+    if (totalFitness == 0) return survivingGenomes;
+
+
+    // the n best genomes always survive, n = keepBest
+    for (int i = 0; i < nBest; i++) {
+        survivingGenomes.push_back(genomesArray[i]);
+        genomesArray.erase(genomesArray.begin()+i);
+    }
+
+    // while there are not enough genomes selected... and there are genomes in the array
+    while (survivingGenomes.size() < nSurvivors && genomesArray.size() != 0) {
+
+        // select a random number depending on the totalchance left
+        int x = rand()%(int)totalChance;
+        float percentageCounter = 0;    // sum of percentages of genomes already gone through
+
+
+        for (int i = 0; i < genomesArray.size(); i++) {
+            float survivingChance = 100.0f*(float)genomesArray[i]->getFitness() / totalFitness;
+
+            // if the genome has 0% chance at surviving remove it from the array
+            if (survivingChance == 0) {
+                genomesArray.erase(genomesArray.begin()+i);
+
+                i--;
+            }
+
+            // if randomNumber is between the percentageCounter and the percentageCounter+current survivingChance:
+            // genome survives and survivingChance is subtracted to totalChance
+            // genome is removed from the array, so that it cannot be chosen again
+            if (x > percentageCounter && x <= (percentageCounter + survivingChance)) {
+                survivingGenomes.push_back(genomesArray[i]);
+                totalChance -= survivingChance;
+                genomesArray.erase(genomesArray.begin()+i);
+                i--;
+                break;
+            }
+                // else: survivingChance is added to percentageCounter
+            else percentageCounter += survivingChance;
+        }
+    }
+
+    return survivingGenomes;
+}
+
+
+vector<Genome*> Pool::eliteSelection(){
     vector<Genome*> children;
 
     // add
@@ -354,7 +414,7 @@ void Pool::newGeneration() {
         double average = 0;
 
         // avoid having NaN
-        if (averageFitness > 0) average = (double)genomes[g]->getFitness()/(double)averageFitness;
+        if (averageFitness[generation] > 0) average = (double)genomes[g]->getFitness()/(double)averageFitness[generation];
 
         int breed = round(average);
 
@@ -364,15 +424,44 @@ void Pool::newGeneration() {
         }
     }
 
-    cullSpecies(true); // Cull all but the top members of each species
+    return children;
+}
+
+// remove the bottom half of the genomes of each species
+// remove
+void Pool::newGeneration() {
+    vector<Genome *> survivingGenomes = rouletteSelection();
+
+    // if the roulette selection did not take any survivors, that means that totalFitness = 0
+    if (survivingGenomes.size() == 0) {
+        cullSpecies(false); // Cull the bottom half of each species
+    } else {
+        genomes = survivingGenomes;
+    }
 
 
+    sort(genomes.begin(), genomes.end(), isLhsFitnessBigger);
+
+
+    //breed by elite selection
+    vector<Genome *> children = eliteSelection();
+
+
+    //cullSpecies(true); // Cull all but the top members of each species // elitism
+
+
+    // add random children until the population limit is reached
     while (children.size() + genomes.size() < Pool::POPULATION) {
         children.push_back(breedChild());
     }
 
     for (int i = 0; i < children.size(); i++) {
         genomes.push_back(children[i]);
+    }
+
+    // mutate all but the best
+    for (int i = nBest; i < genomes.size(); i++) {
+        genomes[i]->mutate();
     }
 
     generation++;
