@@ -756,7 +756,6 @@ int main( int argc, char** argv ) {
 
                 tiles = getTilesFromFile(tilesFileName);
 
-
             }
 
 
@@ -767,7 +766,7 @@ int main( int argc, char** argv ) {
             cout << "Current Generation: " << pool.getGeneration() << " Current Genome: " << pool.getCurrentGenome() << endl;
             for (int i = 0; i < tiles.rows; i++){
                 for (int j = 0; j < tiles.cols; j++){
-                    double tile = tiles.at<double>(i, j);
+                    double tile = tiles.at<float>(i, j);
                     inputs.push_back(tile);
                 }
             }

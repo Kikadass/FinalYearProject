@@ -167,12 +167,15 @@ void Genome::linkMutate(bool forceBias) {
         neuron1 = Pool::INPUT_SIZE;
     }
 
-    if (neuron1 <= Pool::INPUT_SIZE && neuron2 <= Pool::INPUT_SIZE) {
-        //Both input nodes
-        // cout << "No new gene created" << endl;
-
+    //If both neurons are input neurons, or
+    // neuron1 = neuron2:
+    // End function to not create a gene.
+    if ((neuron1 <= Pool::INPUT_SIZE && neuron2 <= Pool::INPUT_SIZE) ||
+            neuron1 == neuron2) {
         return;
     }
+
+
 
     cout << "New gene created!" << endl;
     cout << "Both neurons: " << neuron1 << " : " << neuron2 << endl;
@@ -201,7 +204,6 @@ void Genome::linkMutate(bool forceBias) {
     // if the gene doesn't exist, add it to the array
     genes.push_back(newLink);
 }
-
 
 bool Genome::containsLink(Gene * link) {
     for (int i = 0; i < genes.size(); i++){
@@ -259,41 +261,46 @@ void Genome::enableDisableMutate(bool enable) {
 // count all the neurons there is and give a random index of all neurons
 // if there are no genes it will still return a random number between the inputs and the outputs
 int Genome::randomNeuron(bool isInput) {
-    map<int, bool> neurons;
+    vector<int> neurons;
 
-    // put into neurons the inputSize + the bias
-    for (int i = 0; i <= Pool::INPUT_SIZE; i++){
-        neurons[i] = true;
+    if (isInput) {
+        // put into neurons the inputSize + the bias
+        for (int i = 0; i <= Pool::INPUT_SIZE; i++) {
+            neurons.push_back(i);
+        }
     }
-
-    if (!isInput) {
+    else {
         for (int i = 0; i < Pool::OUTPUT_SIZE; i++){
-            neurons[Pool::MaxNodes + i] = true;
+            neurons.push_back(Pool::MaxNodes + i);
         }
     }
 
     // if we want an input neuron in return it will add all neurons appart from the outputs
     // if we want a non input neuron, it will add all neurons except of the input ones
     for (int i = 0; i < genes.size(); i++){
+        int neuron;
         if (isInput) {
-            neurons[genes[i]->getInto()] = true;
+            neuron = genes[i]->getInto();
         }
         else {
-            neurons[genes[i]->getOut()] = true;
+            neuron = genes[i]->getOut();
         }
+        //check if the neuron is already in the vector
+        std::vector<int>::iterator it = find (neurons.begin(), neurons.end(), neuron);
+
+        // if neuron is not in the vector
+        if (it == neurons.end())
+            neurons.push_back(neuron);
     }
 
     int randomNeuron = rand() % neurons.size();
 
-    // if the randomNeuron is > than the lastNeuronCreated, it means that it is an output neuron
-    // which have an index of Pool::MaxNodes+i where i goes from 0 to Pool::OUTPUT_SIZE
-    if (randomNeuron > lastNeuronCreated){
-        randomNeuron -= lastNeuronCreated;
-        randomNeuron += Pool::MaxNodes-1;
-    }
+
+    randomNeuron = neurons[randomNeuron];
 
     return randomNeuron;
 }
+
 
 
 void Genome::firstGenome() {
@@ -305,6 +312,9 @@ void Genome::firstGenome() {
 bool isRhsOutBigger(Gene* a, Gene* b) { return (*a).getOut() < (*b).getOut() ; }
 
 void Genome::generateNetwork() {
+    network.clear();
+
+
     if (!genes.empty()) {
         //sort genes having the last ones to the right. biggest output neuron index to the right
         sort(genes.begin(), genes.end(), isRhsOutBigger);
@@ -334,9 +344,9 @@ void Genome::generateNetwork() {
             network[genes[i]->getOut()].addGene((*genes[i]));
 
             // if input neuron does not exist, create it
-            if (network.find(genes[i]->getInto()) == network.end()) {
-                network[genes[i]->getInto()] = Neuron2();
-            }
+            //if (network.find(genes[i]->getInto()) == network.end()) {
+              //  network[genes[i]->getInto()] = Neuron2();
+            //}
         }
         else {
             // if gene is not enabled, delete gene
@@ -483,8 +493,8 @@ double Genome::evaluateNeuron(int neuron){
         Gene gene = network[neuron].getGenes()[j];
         double value = network[gene.getInto()].getValue();
 
-        // if neuron has not been evaluated, evaluate it
-        if (value == -20) value = evaluateNeuron(gene.getInto());
+        // if neuron has genes, evaluate neuron
+        if (network[gene.getInto()].getGenes().size() > 0) value = evaluateNeuron(gene.getInto());
 
         sum += gene.getWeight() * value;
     }
