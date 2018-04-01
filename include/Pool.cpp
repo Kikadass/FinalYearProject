@@ -365,8 +365,11 @@ vector<Genome*> Pool::rouletteSelection(){
 
     // the n best genomes always survive, n = keepBest
     for (int i = 0; i < nBest; i++) {
+        totalChance -= 100.0f*(float)genomesArray[i]->getFitness() / totalFitness;
+
         survivingGenomes.push_back(genomesArray[i]);
         genomesArray.erase(genomesArray.begin()+i);
+        i--;
     }
 
     // while there are not enough genomes selected... and there are genomes in the array
@@ -383,14 +386,13 @@ vector<Genome*> Pool::rouletteSelection(){
             // if the genome has 0% chance at surviving remove it from the array
             if (survivingChance == 0) {
                 genomesArray.erase(genomesArray.begin()+i);
-
                 i--;
             }
 
             // if randomNumber is between the percentageCounter and the percentageCounter+current survivingChance:
             // genome survives and survivingChance is subtracted to totalChance
             // genome is removed from the array, so that it cannot be chosen again
-            if (x > percentageCounter && x <= (percentageCounter + survivingChance)) {
+            if (x >= percentageCounter && x <= (percentageCounter + survivingChance)) {
                 survivingGenomes.push_back(genomesArray[i]);
                 totalChance -= survivingChance;
                 genomesArray.erase(genomesArray.begin()+i);
@@ -430,6 +432,7 @@ vector<Genome*> Pool::eliteSelection(){
 // remove the bottom half of the genomes of each species
 // remove
 void Pool::newGeneration() {
+    sort(genomes.begin(), genomes.end(), isLhsFitnessBigger);
     vector<Genome *> survivingGenomes = rouletteSelection();
 
     // if the roulette selection did not take any survivors, that means that totalFitness = 0
@@ -440,7 +443,7 @@ void Pool::newGeneration() {
     }
 
 
-    sort(genomes.begin(), genomes.end(), isLhsFitnessBigger);
+
 
 
     //breed by elite selection
