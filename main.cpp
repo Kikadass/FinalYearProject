@@ -234,7 +234,7 @@ void pressKey(CGKeyCode keyCode){
     CGEventPost(kCGHIDEventTap, keydown);
 
     //press button for 50ms
-    usleep(50000);
+    usleep(500000);
     CGEventPost(kCGHIDEventTap, keyup);
 
 
@@ -322,8 +322,8 @@ Mat getScreen(){
     CGImageRelease(CGImage);
     cvtColor(image, image, CV_RGB2BGR);
 
-    imshow("ORIGINAL", image);
-    moveWindow("ORIGINAL", 650, 0);
+    //imshow("ORIGINAL", image);
+    //moveWindow("ORIGINAL", 650, 0);
 
 
     return image;
@@ -666,7 +666,7 @@ int main( int argc, char** argv ) {
     string saveLocation = "../Saves/"+getDate()+".json";
     string loadLocation = "../Saves/18:2:2018_17-38-52.json";
     bool poolFromFile = false;
-    bool gameFromScreen = false;
+    bool gameFromScreen = true;
 
     vector<Mat> sprites;       // collect the sprites for fitness
     getSprites(sprites, startLocation);
@@ -688,6 +688,9 @@ int main( int argc, char** argv ) {
             pool.loadPool(loadLocation);
         }
         else pool.getGenomes()[pool.getCurrentGenome()]->generateNetwork();
+
+        pool.getGenomes()[pool.getCurrentGenome()]->showGenome();
+
 
         while (!dead) {
             Mat tiles;
@@ -718,6 +721,8 @@ int main( int argc, char** argv ) {
 
                     dead = true;
                     pool.getGenomes()[pool.getCurrentGenome()]->setFitness(fitness);
+
+                    cout << "FITNESS: " << fitness << endl;
 
                     continue;
                 }

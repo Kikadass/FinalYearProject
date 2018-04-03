@@ -91,6 +91,10 @@ void Genome::copyMutationRates(MutationRates mR){
 }
 
 void Genome::addGene(Gene * g){
+    // if that gene already exists, merge both weights
+    if (containsLink(g)) {
+        return;
+    }
     genes.push_back(g);
 }
 
@@ -146,10 +150,9 @@ void Genome::pointMutate() {
     double step = mutationRates.step;
 
     for (int i = 0; i < genes.size(); i++) {
-        Gene* gene = genes[i];
         if (rand() % 2 < Pool::PerturbChance) {
-            gene->setWeight(gene->getWeight() + (rand()%11)/10 * step * 2 - step);
-        } else gene->setWeight((rand()%11)/10 * 4 - 2);
+            genes[i]->setWeight(genes[i]->getWeight() + (rand()%11)/10 * step * 2 - step);
+        } else genes[i]->setWeight((rand()%11)/10 * 4 - 2);
     }
 }
 
@@ -195,7 +198,7 @@ void Genome::linkMutate(bool forceBias) {
 
     Gene * newLink = new Gene(into, out, weight, enabled);
 
-    // if that gene already exists, don't do anything
+    // if that gene already exists, merge both weights
     if (containsLink(newLink)) {
         return;
     }
@@ -208,22 +211,34 @@ void Genome::linkMutate(bool forceBias) {
 bool Genome::containsLink(Gene * link) {
     for (int i = 0; i < genes.size(); i++){
         if (genes[i]->getInto() == link->getInto() && genes[i]->getOut() == link->getOut()) {
+
+            double newWeight = (genes[i]->getWeight() + link->getWeight())/2;
+            genes[i]->setWeight(newWeight);
+
             return true;
         }
     }
     return false;
 }
 
+
+//create a new gene between two of them
 void Genome::nodeMutate() {
     if (genes.size() == 0)  return;
 
 
-    int randGene =  rand() % genes.size();;
+    int randGene =  rand() % genes.size();
     if (!genes[randGene]->isEnabled())  return;
+    if (genes[randGene]->getOut() <= lastNeuronCreated){
+        return;
+    }
+
     genes[randGene]->setEnabled(false);
 
 
+
     lastNeuronCreated++;
+
 
     //Create  gene1 that gets gene as input
     int into = genes[randGene]->getInto();
@@ -335,18 +350,12 @@ void Genome::generateNetwork() {
 
         if (genes[i]->isEnabled()) {
             // neuron is not in the map create neuron
-            cout << "Getting neurons!" << endl;
             if (network.find(genes[i]->getOut()) == network.end()){
                 network[genes[i]->getOut()] = Neuron2();
             }
 
             // add gene to the output neuron
             network[genes[i]->getOut()].addGene((*genes[i]));
-
-            // if input neuron does not exist, create it
-            //if (network.find(genes[i]->getInto()) == network.end()) {
-              //  network[genes[i]->getInto()] = Neuron2();
-            //}
         }
         else {
             // if gene is not enabled, delete gene
@@ -403,7 +412,7 @@ void Genome::evaluateNetworkToFile(vector<double> inputs) {
     myfile << "Finished!";
     myfile.close();
 
-    showGenome();
+    cout << "Pressed buttons: " <<  pressedButtons[0] << " " << pressedButtons[1] << " " <<pressedButtons[2] << endl;
 }
 
 int Genome::evaluateNetwork(vector<double> inputs) {
@@ -418,25 +427,6 @@ int Genome::evaluateNetwork(vector<double> inputs) {
     for (int i = 0; i < Pool::INPUT_SIZE; i++) {
         network[i].setValue(inputs[i]);
     }
-
-
-    /*
-    // go through neurons, if they don't have genes they are input neurons already with a value.
-    // if they have genes, they get the values of all inputs * by the weights
-    // use sigmoid function with the sum (to convert it into a 0 to 1 value) and stores them in that neuron
-    for (map<int, Neuron2>::const_iterator i = network.begin(); i != network.end(); ++i) {
-        int sum = 0;
-        for (int j = 0; j < network[i->first].getGenes().size(); j++) {
-            Gene gene = network[i->first].getGenes()[j];
-            sum += gene.getWeight() * network[gene.getInto()].getValue();
-        }
-
-        if (network[i->first].getGenes().size() > 0) {
-            //sigmoid function. set the value between 0 and 1
-            network[i->first].setValue(sum / (1 + abs(sum)));
-        }
-    }
-    */
 
 
     map<int, Neuron2>::const_iterator i = network.end();
@@ -482,7 +472,8 @@ int Genome::evaluateNetwork(vector<double> inputs) {
 
     */
 
-    showGenome();
+
+    cout << "Pressed button: " <<  pressed << endl;
 
     return pressed;
 }
