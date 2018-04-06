@@ -4,9 +4,6 @@
 
 #include <fstream>
 #include "Pool.h"
-#include "../nlohmann/json.hpp"
-
-using json = nlohmann::json;
 
 
 int Pool::ScreenHeight = 16;
@@ -15,14 +12,9 @@ int Pool::ScreenWidth = 20;
 int Pool::INPUT_SIZE = ScreenHeight*ScreenWidth;
 
 //number of buttons
-int Pool::OUTPUT_SIZE = 4;
+int Pool::OUTPUT_SIZE = 3;
 
 int Pool::POPULATION = 20;
-double Pool::DELTA_DISJOINT = 2.0;
-double Pool::DELTA_WEIGHTS = 0.4;
-double Pool::DELTA_THRESHOLD = 1.0;
-
-int Pool::STALE_SPECIES = 15;
 
 double Pool::PerturbChance = 0.90;
 double Pool::CrossoverChance = 0.75;
@@ -52,6 +44,36 @@ Pool::Pool() {
     }
 }
 
+
+// go through array of fitness and push all values into vector
+vector<int> Pool::loadFitness(string name, json pool){
+    vector<int> fitnessVector;
+
+    string f = name;
+    int exists = pool.count(f);
+    json fitness = pool.at(f);
+
+    //check if the array exists
+    if (exists > 0) {
+        int y = 0;
+        f = to_string(y);
+        exists = fitness.count(f);
+        for (y = 1; exists > 0; y++) {
+            fitnessVector.push_back(fitness.at(f).get<int>());
+
+
+            // prepare for next iteration
+            f = to_string(y);
+            exists = fitness.count(f);
+        }
+    }
+    else{
+        throw (name + " NOT FOUND!");
+    }
+
+    return fitnessVector;
+}
+
 void Pool::loadPool(string loadLocation) {
     ifstream i(loadLocation);
     json pool;
@@ -69,10 +91,6 @@ void Pool::loadPool(string loadLocation) {
     INPUT_SIZE = pool.at("INPUT_SIZE").get<int>();
     OUTPUT_SIZE = pool.at("OUTPUT_SIZE").get<int>();
     POPULATION = pool.at("POPULATION").get<int>();
-    DELTA_DISJOINT = pool.at("DELTA_DISJOINT").get<double>();
-    DELTA_WEIGHTS = pool.at("DELTA_WEIGHTS").get<double>();
-    DELTA_THRESHOLD = pool.at("DELTA_THRESHOLD").get<double>();
-    STALE_SPECIES = pool.at("STALE_SPECIES").get<int>();
     PerturbChance = pool.at("PerturbChance").get<double>();
     CrossoverChance = pool.at("CrossoverChance").get<double>();
     ConnMutateChance = pool.at("ConnMutateChance").get<double>();
@@ -84,12 +102,17 @@ void Pool::loadPool(string loadLocation) {
     StepSize = pool.at("StepSize").get<double>();
     MaxNodes = pool.at("MaxNodes").get<int>();
 
+
+    maxFitness = loadFitness("maxFitness", pool);
+    averageFitness = loadFitness("averageFitness", pool);;
+    totalFitness = loadFitness("totalFitness", pool);;
+
     vector<Genome*> children;
 
     int y = 0;
     string G = "genome" + to_string(y);
     int countG = pool.count(G);
-    for (int y = 1; countG > 0; y++){
+    for (y = 1; countG > 0; y++){
         json genome = pool.at(G);
 
         vector<Gene*> genes;
@@ -97,7 +120,7 @@ void Pool::loadPool(string loadLocation) {
         int z = 0;
         string g = "gene" + to_string(z);
         int countg = genome.count(g);
-        for (int z = 1; countg > 0; z++){
+        for (z = 1; countg > 0; z++){
             json gene = genome.at(g);
 
             int into = gene.at("into").get<int>();
@@ -167,7 +190,6 @@ void Pool::savePool(string location){
         }
 
 
-
         MutationRates mR= g->getMutationRates();
         string mutationRatesStr = "\"mutationRates\": {";
         mutationRatesStr += "\"connections\": " + to_string(mR.connections) + ", ";
@@ -182,12 +204,29 @@ void Pool::savePool(string location){
 
         genomeStr += mutationRatesStr;
 
-        genomeStr += "\"lastNeuronCreated\": " + to_string(g->getLastNeuronCreated());
+        genomeStr += "\"lastNeuronCreated\": " + to_string(g->getLastNeuronCreated()) + ", ";
+        genomeStr += "\"fitness\": " + to_string(g->getFitness());
 
         genomeStr += "}, ";
 
         poolStr += genomeStr;
     }
+
+    string maxFitnessStr = "\"maxFitness\": {";
+    for (int i = 0; i < maxFitness.size(); i++){
+        maxFitnessStr += "\"" + to_string(i) +"\": " +  to_string(maxFitness[i]);
+    }
+
+    string averageFitnessStr = "\"averageFitness\": {";
+    for (int i = 0; i < averageFitness.size(); i++){
+        averageFitnessStr += "\"" + to_string(i) +"\": " +  to_string(averageFitness[i]);
+    }
+
+    string totalFitnessStr = "\"totalFitness\": {";
+    for (int i = 0; i < totalFitness.size(); i++){
+        totalFitnessStr += "\"" + to_string(i) +"\": " +  to_string(totalFitness[i]);
+    }
+
 
 
     poolStr += "\"generation\": " + to_string(generation) + ", ";
@@ -197,10 +236,6 @@ void Pool::savePool(string location){
     poolStr += "\"INPUT_SIZE\": " + to_string(Pool::INPUT_SIZE) + ", ";
     poolStr += "\"OUTPUT_SIZE\": " + to_string(Pool::OUTPUT_SIZE) + ", ";
     poolStr += "\"POPULATION\": " + to_string(Pool::POPULATION) + ", ";
-    poolStr += "\"DELTA_DISJOINT\": " + to_string(Pool::DELTA_DISJOINT) + ", ";
-    poolStr += "\"DELTA_WEIGHTS\": " + to_string(Pool::DELTA_WEIGHTS) + ", ";
-    poolStr += "\"DELTA_THRESHOLD\": " + to_string(Pool::DELTA_THRESHOLD) + ", ";
-    poolStr += "\"STALE_SPECIES\": " + to_string(Pool::STALE_SPECIES) + ", ";
     poolStr += "\"PerturbChance\": " + to_string(Pool::PerturbChance) + ", ";
     poolStr += "\"CrossoverChance\": " + to_string(Pool::CrossoverChance) + ", ";
     poolStr += "\"ConnMutateChance\": " + to_string(Pool::ConnMutateChance) + ", ";
@@ -244,7 +279,6 @@ void Pool::calculateFitness() {
 
 bool isLhsFitnessBigger(Genome* a, Genome* b) { return a->getFitness() > b->getFitness(); }
 
-
 double Round(double x, int p) {
     if (x != 0.0) {
         return ((floor((fabs(x)*pow(double(10.0),p))+0.5))/pow(double(10.0),p))*(x/fabs(x));
@@ -254,20 +288,18 @@ double Round(double x, int p) {
 }
 
 void Pool::nextGenome(string saveLocation){
-
     currentGenome++;
 
     if (currentGenome == genomes.size()) {
 
         calculateFitness();
-        currentGenome = 0;
-
-
-        // TODO:: mutate, crossover etc+
-        newGeneration();
         // save pool in file location
         savePool(saveLocation);
 
+        currentGenome = 0;
+
+        // select survivors, breeding and mutation
+        newGeneration();
     }
 }
 
@@ -282,7 +314,6 @@ void Pool::cullSpecies(bool keepBest) {
     while (genomes.size() > remaining) {
         genomes.pop_back();
     }
-
 }
 
 Genome* Pool::crossover(Genome* g1, Genome* g2) {
@@ -310,7 +341,6 @@ Genome* Pool::crossover(Genome* g1, Genome* g2) {
     child->setLastNeuronCreated(max(g1->getMaxNeuron(), g2->getMaxNeuron()));
 
     child->copyMutationRates(g1->getMutationRates());
-
 
     return child;
 }
@@ -463,9 +493,8 @@ void Pool::newGeneration() {
     generation++;
 }
 
+
 //GETTERS
-
-
 int Pool::getGeneration() {
     return generation;
 }

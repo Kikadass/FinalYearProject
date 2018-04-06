@@ -6,6 +6,9 @@
 #define FINALYEARPROJECT_POOL_H
 
 #include "Species.h"
+#include "../nlohmann/json.hpp"
+
+using json = nlohmann::json;
 
 
 class Pool {
@@ -29,11 +32,6 @@ public:
     static int OUTPUT_SIZE;
 
     static int POPULATION;
-    static double DELTA_DISJOINT;
-    static double DELTA_WEIGHTS;
-    static double DELTA_THRESHOLD;
-
-    static int STALE_SPECIES;
 
     static double PerturbChance;
     static double CrossoverChance;
@@ -52,6 +50,8 @@ public:
     static int MaxNodes;
 
     Pool();
+
+    vector<int> loadFitness(string name, json pool);
 
     void loadPool(string loadLocation);
 
@@ -80,6 +80,7 @@ public:
     vector<Genome *> eliteSelection();
 
     vector<Genome *> copyGenomes();
+
 };
 
 

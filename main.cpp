@@ -660,20 +660,82 @@ string getDate(){
     return date+"_"+time;
 }
 
-int main( int argc, char** argv ) {
 
+//returns if player has died or not
+bool playGameFromScreen(Pool pool, Mat *tiles){
     char* startLocation = "../Images/fitness/";
-    string saveLocation = "../Saves/"+getDate()+".json";
-    string loadLocation = "../Saves/18:2:2018_17-38-52.json";
-    bool poolFromFile = false;
-    bool gameFromScreen = true;
 
     vector<Mat> sprites;       // collect the sprites for fitness
     getSprites(sprites, startLocation);
 
+    // check keyPress
+    int keyPressed = waitKeyEx(1);
+
+    Mat screen = getScreen();
+
+    *tiles = getAveragesBnW(screen);
+
+    // convert to floats
+    tiles->convertTo(*tiles, CV_64FC1);
+
+
+    //check if player has died.  The Blue values for the lives are between 40 and 70. if is less than that, there is no live in that tile
+    // or if space is pressed. only for debugging
+    if (tiles->at<double>(tiles->rows-2, 3) < 30 || keyPressed == 32){
+        int fitness = getFitness(screen, sprites);
+
+        pool.getGenomes()[pool.getCurrentGenome()]->setFitness(fitness);
+
+        cout << "FITNESS: " << fitness << endl;
+
+        return true;
+    }
+
+    // convert values between 0 and 1 being 1 255
+    *tiles /= 255;
+
+    Mat saveTiles = *tiles;
+    scaleUp(saveTiles, 20);
+
+    return false;
+}
+
+bool playFromFile(Pool pool, Mat *tiles){
+    string scoresFileName = "../../AI-SpaceInvaders/Score.txt";
+    string tilesFileName = "../../AI-SpaceInvaders/tiles.txt";
+    if (checkScoreFile(scoresFileName, tilesFileName)){
+        ifstream myfile;
+        myfile.open(scoresFileName);
+
+        string line;
+
+        getline(myfile, line);
+        int fitness = stoi(line);
+
+        myfile.close();
+
+        //delete file
+        std::remove(scoresFileName.c_str());
+
+        pool.getGenomes()[pool.getCurrentGenome()]->setFitness(fitness);
+
+        return true;
+    }
+
+    *tiles = getTilesFromFile(tilesFileName);
+
+    return false;
+}
+
+int main( int argc, char** argv ) {
+    string saveLocation = "../Saves/"+getDate()+".json";
+    string loadLocation = "../Saves/2:4:2018_15-33-1.json";
+    bool poolFromFile = false;
+    bool gameFromScreen = false;
+
     Pool pool;
 
-    //infinite Exit loop
+    //infinite loop
     while(1) {
         bool dead = false;
 
@@ -687,91 +749,30 @@ int main( int argc, char** argv ) {
         if (poolFromFile){
             pool.loadPool(loadLocation);
         }
-        else pool.getGenomes()[pool.getCurrentGenome()]->generateNetwork();
-
+        pool.getGenomes()[pool.getCurrentGenome()]->generateNetwork();
         pool.getGenomes()[pool.getCurrentGenome()]->showGenome();
 
 
         while (!dead) {
-            Mat tiles;
+            Mat *tiles = new Mat;
 
             if (gameFromScreen){
-                int keyPressed = waitKeyEx(50);
-                // if pressed ESC it closes the program
-                if (keyPressed == 27) {
-                    return 0;
-                }
-                else if (keyPressed == 102) { // if S is pressed
-                    sleep(1);
-                }
-
-
-                Mat screen = getScreen();
-
-                //Mat tiles = getTiles(screen, sprites, originalNPoints, points);
-                tiles = getAveragesBnW(screen);
-
-                tiles.convertTo(tiles, CV_64FC1);
-
-
-                //check if player has died.  The Blue values for the lives are between 40 and 70. if is less than that, there is no live in that tile
-                // or if space is pressed. only for debugging
-                if (tiles.at<double>(tiles.rows-2, 3) < 30 || keyPressed == 32){
-                    int fitness = getFitness(screen, sprites);
-
-                    dead = true;
-                    pool.getGenomes()[pool.getCurrentGenome()]->setFitness(fitness);
-
-                    cout << "FITNESS: " << fitness << endl;
-
-                    continue;
-                }
-
-                // convert values between 0 and 1 being 1 255
-                tiles /= 255;
-
-
-                //imwrite("TileMap.bmp", tiles);
-
-                Mat saveTiles = tiles;
-                scaleUp(saveTiles, 20);
+                dead = playGameFromScreen(pool, tiles);
             }
             else {
-                string scoresFileName = "../../AI-SpaceInvaders/Score.txt";
-                string tilesFileName = "../../AI-SpaceInvaders/tiles.txt";
-                if (checkScoreFile(scoresFileName, tilesFileName)){
-                    ifstream myfile;
-                    myfile.open(scoresFileName);
-
-                    dead = true;
-                    string line;
-
-                    getline(myfile, line);
-                    int fitness = stoi(line);
-
-                    myfile.close();
-
-                    //delete file
-                    std::remove(scoresFileName.c_str());
-
-                    pool.getGenomes()[pool.getCurrentGenome()]->setFitness(fitness);
-
-                    continue;
-                }
-
-                tiles = getTilesFromFile(tilesFileName);
-
+                dead = playFromFile(pool, tiles);
             }
 
+            if (dead) continue;
 
             // START OF AI
             //create array of inputs
             vector<double> inputs;
 
             cout << "Current Generation: " << pool.getGeneration() << " Current Genome: " << pool.getCurrentGenome() << endl;
-            for (int i = 0; i < tiles.rows; i++){
-                for (int j = 0; j < tiles.cols; j++){
-                    double tile = tiles.at<float>(i, j);
+            for (int i = 0; i < tiles->rows; i++){
+                for (int j = 0; j < tiles->cols; j++){
+                    double tile = tiles->at<float>(i, j);
                     inputs.push_back(tile);
                 }
             }
