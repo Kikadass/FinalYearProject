@@ -327,7 +327,8 @@ void Genome::firstGenome() {
 bool isRhsOutBigger(Gene* a, Gene* b) { return (*a).getOut() < (*b).getOut() ; }
 
 void Genome::generateNetwork() {
-    network.clear();
+    if(network.size() > 0)
+        network.clear();
 
 
     if (!genes.empty()) {

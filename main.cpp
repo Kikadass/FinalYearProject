@@ -15,6 +15,7 @@
 #include "dirent.h"
 #include "include/Pool.h"
 #include <regex>
+#include "gnuplot-cpp/gnuplot_i.hpp" //Gnuplot class handles POSIX-Pipe-communikation with Gnuplot
 
 using namespace std;
 using namespace cv;
@@ -628,21 +629,6 @@ Mat scaleUp(Mat image, int scale){
     return image;
 }
 
-
-/*
-226 pared y puntos
-209-208 jugador
- 214 fantasma asustado a punto de aparecer
-198 fantasma rojo
- 196 fantasma rosa
- 179 fantasma naranja
- 88 fantasma verde
-68 fantasma asustado
- 182 cerecas
- */
-
-// size 21x14
-
 string getDate(){
     time_t t = time(0);   // get time now
     struct tm * now = localtime( & t );
@@ -662,7 +648,7 @@ string getDate(){
 
 
 //returns if player has died or not
-bool playGameFromScreen(Pool pool, Mat *tiles){
+bool playGameFromScreen(Pool pool, Mat *tiles, bool* running){
     char* startLocation = "../Images/fitness/";
 
     vector<Mat> sprites;       // collect the sprites for fitness
@@ -670,6 +656,11 @@ bool playGameFromScreen(Pool pool, Mat *tiles){
 
     // check keyPress
     int keyPressed = waitKeyEx(1);
+
+    // if pressed ESC it closes the program
+    if (keyPressed == 27) {
+        *running = false;
+    }
 
     Mat screen = getScreen();
 
@@ -727,16 +718,56 @@ bool playFromFile(Pool pool, Mat *tiles){
     return false;
 }
 
+void gnuplot(Pool pool) {
+    try {
+        // set terminal to x11 for mac
+        Gnuplot::set_terminal_std("x11");
+
+        // initialize the graph with the style in brackets
+        Gnuplot g1("lines");
+        g1.reset_plot();
+
+        // set title of chart
+        g1.set_title("Fitness Chart");
+
+        // do line with one
+        g1.plot_x(pool.getMaxFitness(), "maxFitness");
+        g1.plot_x(pool.getAverageFitness(), "averageFitness");
+        //g1.plot_x(pool.getTotalFitness(), "totalFitness");
+
+        // autoscale to the inputs given
+        g1.set_xautoscale().replot();
+
+        // window output
+        g1.showonscreen();
+
+        cout << endl << "Press ENTER to continue..." << endl;
+
+        cin.clear();
+        cin.ignore(cin.rdbuf()->in_avail());
+        cin.get();
+
+    } catch (GnuplotException ge) {
+        cout << ge.what() << endl;
+    }
+}
+
 int main( int argc, char** argv ) {
     string saveLocation = "../Saves/"+getDate()+".json";
-    string loadLocation = "../Saves/2:4:2018_15-33-1.json";
-    bool poolFromFile = false;
+    string loadLocation = "../Saves/8:4:2018_18-40-12.json";
+    bool poolFromFile = true;
     bool gameFromScreen = false;
+    bool* running = new bool(true);
 
     Pool pool;
+    if (poolFromFile){
+        pool.loadPool(loadLocation);
+
+        gnuplot(pool);
+    }
 
     //infinite loop
-    while(1) {
+    while(*running) {
         bool dead = false;
 
         if (gameFromScreen) {
@@ -746,9 +777,6 @@ int main( int argc, char** argv ) {
 
         cout << "Generating Network!" << endl;
 
-        if (poolFromFile){
-            pool.loadPool(loadLocation);
-        }
         pool.getGenomes()[pool.getCurrentGenome()]->generateNetwork();
         pool.getGenomes()[pool.getCurrentGenome()]->showGenome();
 
@@ -757,7 +785,7 @@ int main( int argc, char** argv ) {
             Mat *tiles = new Mat;
 
             if (gameFromScreen){
-                dead = playGameFromScreen(pool, tiles);
+                dead = playGameFromScreen(pool, tiles, running);
             }
             else {
                 dead = playFromFile(pool, tiles);
@@ -790,7 +818,7 @@ int main( int argc, char** argv ) {
         pool.nextGenome(saveLocation);
     }
 
-
+    gnuplot(pool);
     cout << "DONE" << endl;
 	putchar(getchar());
 }

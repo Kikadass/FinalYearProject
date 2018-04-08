@@ -63,6 +63,13 @@ public:
 
     int getCurrentGenome();
 
+    const vector<int> &getMaxFitness() const;
+
+    const vector<int> &getAverageFitness() const;
+
+    const vector<int> &getTotalFitness() const;
+
+
     void calculateFitness();
 
     void nextGenome(string saveLocation);
@@ -81,6 +88,7 @@ public:
 
     vector<Genome *> copyGenomes();
 
+    string createFitnessStr(vector<int> fitness, string name);
 };
 
 

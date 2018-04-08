@@ -61,7 +61,6 @@ vector<int> Pool::loadFitness(string name, json pool){
         for (y = 1; exists > 0; y++) {
             fitnessVector.push_back(fitness.at(f).get<int>());
 
-
             // prepare for next iteration
             f = to_string(y);
             exists = fitness.count(f);
@@ -79,13 +78,10 @@ void Pool::loadPool(string loadLocation) {
     json pool;
     i >> pool;
 
-    cout << pool << endl;
-
     pool = pool.at("pool").get<json>();
-    cout << pool << endl;
 
     generation = pool.at("generation").get<int>();
-    currentGenome = pool.at("currentGenome").get<int>();
+    currentGenome = 0;
     ScreenHeight = pool.at("ScreenHeight").get<int>();
     ScreenWidth = pool.at("ScreenWidth").get<int>();
     INPUT_SIZE = pool.at("INPUT_SIZE").get<int>();
@@ -165,6 +161,20 @@ void Pool::loadPool(string loadLocation) {
     this->genomes = children;
 }
 
+string Pool::createFitnessStr(vector<int> fitness, string name){
+    string maxFitnessStr = "\""+name+"\": {";
+    for (int i = 0; i < fitness.size(); i++){
+        maxFitnessStr += "\"" + to_string(i) +"\": " +  to_string(fitness[i]);
+
+        // add coma and space to separate values, but do not do it after the last value
+        if (i < fitness.size()-1) maxFitnessStr += ", ";
+    }
+    // close the array
+    maxFitnessStr += "}, ";
+
+    return maxFitnessStr;
+}
+
 void Pool::savePool(string location){
     string poolStr = "{ \"pool\": {";
 
@@ -212,22 +222,9 @@ void Pool::savePool(string location){
         poolStr += genomeStr;
     }
 
-    string maxFitnessStr = "\"maxFitness\": {";
-    for (int i = 0; i < maxFitness.size(); i++){
-        maxFitnessStr += "\"" + to_string(i) +"\": " +  to_string(maxFitness[i]);
-    }
-
-    string averageFitnessStr = "\"averageFitness\": {";
-    for (int i = 0; i < averageFitness.size(); i++){
-        averageFitnessStr += "\"" + to_string(i) +"\": " +  to_string(averageFitness[i]);
-    }
-
-    string totalFitnessStr = "\"totalFitness\": {";
-    for (int i = 0; i < totalFitness.size(); i++){
-        totalFitnessStr += "\"" + to_string(i) +"\": " +  to_string(totalFitness[i]);
-    }
-
-
+    poolStr += createFitnessStr(maxFitness, "maxFitness");
+    poolStr += createFitnessStr(averageFitness, "averageFitness");
+    poolStr += createFitnessStr(totalFitness, "totalFitness");
 
     poolStr += "\"generation\": " + to_string(generation) + ", ";
     poolStr += "\"currentGenome\": " + to_string(currentGenome) + ", ";
@@ -251,6 +248,8 @@ void Pool::savePool(string location){
 
 
     poolStr += "}}";
+
+    cout << poolStr << endl;
 
     json poolJson = json::parse(poolStr);
 
@@ -505,6 +504,18 @@ int Pool::getCurrentGenome() {
 
 vector<Genome*> &Pool::getGenomes() {
     return genomes;
+}
+
+const vector<int> &Pool::getMaxFitness() const {
+    return maxFitness;
+}
+
+const vector<int> &Pool::getAverageFitness() const {
+    return averageFitness;
+}
+
+const vector<int> &Pool::getTotalFitness() const {
+    return totalFitness;
 }
 
 
