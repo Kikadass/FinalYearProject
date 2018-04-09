@@ -729,6 +729,8 @@ void gnuplot(Pool pool) {
 
         // set title of chart
         g1.set_title("Fitness Chart");
+        g1.set_ylabel("Fitness");
+        g1.set_xlabel("Generations");
 
         // do line with one
         g1.plot_x(pool.getMaxFitness(), "maxFitness");
@@ -754,7 +756,7 @@ void gnuplot(Pool pool) {
 
 int main( int argc, char** argv ) {
     string saveLocation = "../Saves/"+getDate()+".json";
-    string loadLocation = "../Saves/8:4:2018_18-40-12.json";
+    string loadLocation = "../Saves/9:4:2018_9-33-47.json";
     bool poolFromFile = true;
     bool gameFromScreen = false;
     bool* running = new bool(true);
