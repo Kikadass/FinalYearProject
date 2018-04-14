@@ -43,12 +43,16 @@ public:
     void setGlobalRank(int globalRank);
     void copyMutationRates(MutationRates mR);
     void mutate();
-    void pointMutate();
+    void weightMutate();
     void linkMutate(bool forceBias);
     void firstGenome();
     void generateNetwork();
     int evaluateNetwork(vector<double> inputs);
     void evaluateNetworkToFile(vector<double> inputs);
+     // returns a value between 0 and 1 with a maximum of 2 decimals
+    static float randomPercentage(){
+        return ((float)(rand()%101))/100.0f;
+    }
 
 
 
@@ -74,7 +78,6 @@ private:
     void showGene(int iterations, int neuron);
 
     double evaluateNeuron(int neuron);
-
 };
 
 

@@ -235,7 +235,7 @@ void pressKey(CGKeyCode keyCode){
     CGEventPost(kCGHIDEventTap, keydown);
 
     //press button for 50ms
-    usleep(500000);
+    usleep(100000);
     CGEventPost(kCGHIDEventTap, keyup);
 
 
@@ -537,13 +537,11 @@ int getFitness(Mat screen, vector<Mat> sprites) {
             //get 8x8 block from image from (j,i) coordinates
             Mat block = planes[planeToCheck](cv::Rect(j, i, tileWidth, tileHeight));
 
-
             bool spriteFound = false;
             int mostSimilar = -1;
             int aeBnW = 500000000;
 
             for (int k = 0; k < sprites.size(); k++) {
-
 
                 if (averageErrorBnW(sprites[k], block) < aeBnW) {
                     mostSimilar = k;
@@ -560,15 +558,6 @@ int getFitness(Mat screen, vector<Mat> sprites) {
 
                     // if it does not detect any of the numbers, it found a blank tile, so it has finished reading the fitness
                     if (mostSimilar < 0 || !spriteFound && aeBnW > 1000) {
-                        /*
-                        cout << "No sprite found!" << endl;
-                        cout << "AVERAGE ERROR" << aeBnW << "  :  " << mostSimilar << endl;
-                        cout << block << endl;
-                        imshow("BLOCK", block);
-                        waitKeyEx(40000);
-                        cout << sprites[mostSimilar] << endl;
-                         */
-
                         return fitness;
                     }
 
@@ -584,41 +573,25 @@ int getFitness(Mat screen, vector<Mat> sprites) {
     return fitness;
 }
 
-void getSprites(vector<Mat>& sprites, char* location){
-    DIR *dir;
-    struct dirent *ent;
-    if ((dir = opendir (location)) != NULL) {
+void getFitnessSprites(vector<Mat>& sprites, char* location) {
+    // do it for 10 digits
+    for (int i = 0; i < 10; i++) {
+        string n = to_string(i);
 
-        /* print all the files and directories within directory */
-        while ((ent = readdir (dir)) != NULL) {
+        char *image = new char[strlen(location)+6];
+        strcpy(image, location);
+        strcat(image, n.c_str());
+        strcat(image, ".bmp");
 
-            cout << regex_match (ent->d_name, regex("\\.(.*)")) << endl;
-            if (regex_match (ent->d_name, regex("\\.(.*)"))){
-                cout << "File beggining with . is not accepted:" << ent->d_name << endl;
-                continue;
-            }
-            char* subLocation = new char[strlen(location) + 1 + strlen(ent->d_name)+1];
-
-            strcpy(subLocation, location);
-            strcat(subLocation, ent->d_name);
-            strcat(subLocation, "/");
-            getSprites(sprites, subLocation);
-            delete [] subLocation;
-
-        }
-        closedir (dir);
-
-    } else {
-        cout << "Directory does not exist!" << endl;
-        location[strlen(location)-1] = 0;
-        Mat sprite = imread(location, CV_LOAD_IMAGE_GRAYSCALE);
+        Mat sprite = imread(image, CV_LOAD_IMAGE_GRAYSCALE);
         if (!sprite.data) {
-            cout << "Could not open or find the image in: " << location << endl;
-        }
-        else {
-            cout << "Saving sprite: " << location << endl;
+            cout << "Could not open or find the image in: " << image << endl;
+        } else {
+            cout << "Saving sprite: " << image << endl;
             sprites.push_back(sprite);
         }
+
+        delete[] image;
     }
 }
 
@@ -648,12 +621,7 @@ string getDate(){
 
 
 //returns if player has died or not
-bool playGameFromScreen(Pool pool, Mat *tiles, bool* running){
-    char* startLocation = "../Images/fitness/";
-
-    vector<Mat> sprites;       // collect the sprites for fitness
-    getSprites(sprites, startLocation);
-
+bool playGameFromScreen(Pool pool, Mat *tiles, bool* running, vector<Mat> sprites){
     // check keyPress
     int keyPressed = waitKeyEx(1);
 
@@ -719,53 +687,58 @@ bool playFromFile(Pool pool, Mat *tiles){
 }
 
 void gnuplot(Pool pool) {
-    try {
-        // set terminal to x11 for mac
-        Gnuplot::set_terminal_std("x11");
+    // set terminal to x11 for mac
+    Gnuplot::set_terminal_std("x11");
 
-        // initialize the graph with the style in brackets
-        Gnuplot g1("lines");
-        g1.reset_plot();
+    // initialize the graph with the style in brackets
+    Gnuplot g1("lines");
+    g1.reset_plot();
 
-        // set title of chart
-        g1.set_title("Fitness Chart");
-        g1.set_ylabel("Fitness");
-        g1.set_xlabel("Generations");
+    // set title of chart
+    g1.set_title("Fitness Chart");
+    g1.set_ylabel("Fitness");
+    g1.set_xlabel("Generations");
 
-        // do line with one
-        g1.plot_x(pool.getMaxFitness(), "maxFitness");
-        g1.plot_x(pool.getAverageFitness(), "averageFitness");
-        //g1.plot_x(pool.getTotalFitness(), "totalFitness");
+    // do line with one
+    g1.plot_x(pool.getMaxFitness(), "maxFitness");
+    g1.plot_x(pool.getAverageFitness(), "averageFitness");
+    //g1.plot_x(pool.getTotalFitness(), "totalFitness");
 
-        // autoscale to the inputs given
-        g1.set_xautoscale().replot();
+    // autoscale to the inputs given
+    g1.set_xautoscale().replot();
 
-        // window output
-        g1.showonscreen();
+    // window output
+    g1.showonscreen();
 
-        cout << endl << "Press ENTER to continue..." << endl;
+    cout << endl << "Press ENTER to continue..." << endl;
 
-        cin.clear();
-        cin.ignore(cin.rdbuf()->in_avail());
-        cin.get();
 
-    } catch (GnuplotException ge) {
-        cout << ge.what() << endl;
-    }
+    cin.clear();
+    cin.ignore(cin.rdbuf()->in_avail());
+    cin.get();
 }
 
 int main( int argc, char** argv ) {
     string saveLocation = "../Saves/"+getDate()+".json";
     string loadLocation = "../Saves/9:4:2018_9-33-47.json";
-    bool poolFromFile = true;
-    bool gameFromScreen = false;
+    bool poolFromFile = false;
+    bool gameFromScreen = true;
     bool* running = new bool(true);
+    vector<Mat> sprites;       // collect the sprites for fitness
+
 
     Pool pool;
     if (poolFromFile){
         pool.loadPool(loadLocation);
 
         gnuplot(pool);
+
+        cout << "Graph closed" << endl;
+    }
+
+    if (gameFromScreen){
+        char* startLocation = "../Images/fitness/";
+        getFitnessSprites(sprites, startLocation);
     }
 
     //infinite loop
@@ -787,7 +760,7 @@ int main( int argc, char** argv ) {
             Mat *tiles = new Mat;
 
             if (gameFromScreen){
-                dead = playGameFromScreen(pool, tiles, running);
+                dead = playGameFromScreen(pool, tiles, running, sprites);
             }
             else {
                 dead = playFromFile(pool, tiles);

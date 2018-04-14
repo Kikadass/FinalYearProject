@@ -20,7 +20,7 @@ double Pool::PerturbChance = 0.90;
 double Pool::CrossoverChance = 0.75;
 
 double Pool::ConnMutateChance = 0.25;
-double Pool::LinkMutateChance = 2.0;
+double Pool::LinkMutateChance = 0.70;
 double Pool::NodeMutateChance = 0.50;
 double Pool::BiasMutateChance = 0.40;
 double Pool::EnableMutateChance = 0.2;
@@ -344,16 +344,16 @@ Genome* Pool::crossover(Genome* g1, Genome* g2) {
     return child;
 }
 
-Genome* Pool::breedChild() {
+Genome* Pool::breedChild(int index) {
     Genome* child = new Genome();
 
-    if (rand()%101 < Pool::CrossoverChance) {
-        Genome* g1 = genomes[rand()%genomes.size()];
+    if (Genome::randomPercentage() < Pool::CrossoverChance) {
+        Genome* g1 = genomes[index];
         Genome* g2 = genomes[rand()%genomes.size()];
         child = crossover(g1, g2);
     }
     else {
-        Genome genome = *genomes[rand()%genomes.size()];
+        Genome genome = *genomes[index];
         child = new Genome(genome.getGenes(), genome.getFitness(), genome.getAdjustedFitness(), genome.getLastNeuronCreated(), genome.getGlobalRank(), genome.getMutationRates());
     }
 
@@ -405,7 +405,7 @@ vector<Genome*> Pool::rouletteSelection(){
     while (survivingGenomes.size() < nSurvivors && genomesArray.size() != 0) {
 
         // select a float randomly between 0.0 and 1.0
-        float x = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+        float x = Genome::randomPercentage();
         // select a random number depending on the totalchance left
         x *= totalChance;
         float percentageCounter = 0;    // sum of percentages of genomes already gone through
@@ -450,7 +450,7 @@ vector<Genome*> Pool::eliteSelection(){
 
 
         for (int j = 0; j < breed; j++) {
-            children.push_back(breedChild());
+            children.push_back(breedChild(g));
         }
     }
 
@@ -477,7 +477,7 @@ void Pool::newGeneration() {
 
     // add random children until the population limit is reached
     while (children.size() + genomes.size() < Pool::POPULATION) {
-        children.push_back(breedChild());
+        children.push_back(breedChild(rand()%genomes.size()));
     }
 
     for (int i = 0; i < children.size(); i++) {

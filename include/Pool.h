@@ -80,7 +80,7 @@ public:
 
     Genome *crossover(Genome *g1, Genome *g2);
 
-    Genome *breedChild();
+    Genome *breedChild(int index);
 
     vector<Genome*> rouletteSelection();
 

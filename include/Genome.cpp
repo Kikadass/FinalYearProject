@@ -118,41 +118,40 @@ void Genome::mutate() {
         cout << "enable: " << mutationRates.enable << endl;
         cout << "disable: " << mutationRates.disable << endl;
         cout << "step: " << mutationRates.step << endl;
-        cout << "random: " << (rand() % 11) / 10 << endl;
     }
 
-    if ((rand()%11)/10 < mutationRates.connections) {
-        pointMutate();
+    if (randomPercentage() < mutationRates.connections) {
+        weightMutate();
     }
 
     for (double p = mutationRates.link; p > 0; p--){
-        if ((rand()%11)/10 < p) linkMutate(false);
+        if (randomPercentage() < p) linkMutate(false);
     }
 
     for (double p = mutationRates.bias; p > 0; p--){
-        if ((rand()%11)/10 < p) linkMutate(true);
+        if (randomPercentage() < p) linkMutate(true);
     }
 
     for (double p = mutationRates.node; p > 0; p--){
-        if ((rand()%11)/10 < p) nodeMutate();
+        if (randomPercentage() < p) nodeMutate();
     }
 
     for (double p = mutationRates.enable; p > 0; p--){
-        if ((rand()%11)/10 < p) enableDisableMutate(true);
+        if (randomPercentage() < p) enableDisableMutate(true);
     }
 
     for (double p = mutationRates.disable; p > 0; p--){
-        if ((rand()%11)/10 < p) enableDisableMutate(false);
+        if (randomPercentage() < p) enableDisableMutate(false);
     }
 }
 
-void Genome::pointMutate() {
+void Genome::weightMutate() {
     double step = mutationRates.step;
 
     for (int i = 0; i < genes.size(); i++) {
         if (rand() % 2 < Pool::PerturbChance) {
-            genes[i]->setWeight(genes[i]->getWeight() + (rand()%11)/10 * step * 2 - step);
-        } else genes[i]->setWeight((rand()%11)/10 * 4 - 2);
+            genes[i]->setWeight(genes[i]->getWeight() + randomPercentage() * step * 2 - step);
+        } else genes[i]->setWeight(randomPercentage() * 4 - 2);
     }
 }
 
@@ -194,7 +193,7 @@ void Genome::linkMutate(bool forceBias) {
     out = neuron2;
 
 
-    weight = (rand()%11)/10 * 4 - 2;
+    weight = randomPercentage() * 4 - 2;
 
     Gene * newLink = new Gene(into, out, weight, enabled);
 
