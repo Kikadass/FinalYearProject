@@ -45,7 +45,7 @@ public:
     void mutate();
     void weightMutate();
     void linkMutate(bool forceBias);
-    void firstGenome();
+    void randomGenome();
     void generateNetwork();
     int evaluateNetwork(vector<double> inputs);
     void evaluateNetworkToFile(vector<double> inputs);

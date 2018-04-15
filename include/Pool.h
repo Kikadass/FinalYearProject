@@ -20,6 +20,8 @@ private:
     vector<int> averageFitness;
     vector<int> totalFitness;
     int nBest;
+    int nRandom;
+    int nEliteSelection;
     int nSurvivors;
 
 public:

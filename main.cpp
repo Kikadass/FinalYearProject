@@ -722,7 +722,7 @@ int main( int argc, char** argv ) {
     string saveLocation = "../Saves/"+getDate()+".json";
     string loadLocation = "../Saves/9:4:2018_9-33-47.json";
     bool poolFromFile = false;
-    bool gameFromScreen = true;
+    bool gameFromScreen = false;
     bool* running = new bool(true);
     vector<Mat> sprites;       // collect the sprites for fitness
 

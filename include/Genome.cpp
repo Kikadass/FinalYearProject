@@ -95,7 +95,10 @@ void Genome::addGene(Gene * g){
     if (containsLink(g)) {
         return;
     }
-    genes.push_back(g);
+
+    // create new gene
+    Gene * newGene = new Gene(g->getInto(), g->getOut(), g->getWeight(), g->isEnabled(), g->getInnovation());
+    genes.push_back(newGene);
 }
 
 void Genome::mutate() {
@@ -120,29 +123,12 @@ void Genome::mutate() {
         cout << "step: " << mutationRates.step << endl;
     }
 
-    if (randomPercentage() < mutationRates.connections) {
-        weightMutate();
-    }
-
-    for (double p = mutationRates.link; p > 0; p--){
-        if (randomPercentage() < p) linkMutate(false);
-    }
-
-    for (double p = mutationRates.bias; p > 0; p--){
-        if (randomPercentage() < p) linkMutate(true);
-    }
-
-    for (double p = mutationRates.node; p > 0; p--){
-        if (randomPercentage() < p) nodeMutate();
-    }
-
-    for (double p = mutationRates.enable; p > 0; p--){
-        if (randomPercentage() < p) enableDisableMutate(true);
-    }
-
-    for (double p = mutationRates.disable; p > 0; p--){
-        if (randomPercentage() < p) enableDisableMutate(false);
-    }
+    if (randomPercentage() < mutationRates.connections) weightMutate();
+    if (randomPercentage() < mutationRates.link) linkMutate(false);
+    if (randomPercentage() < mutationRates.bias) linkMutate(true);
+    if (randomPercentage() < mutationRates.node) nodeMutate();
+    if (randomPercentage() < mutationRates.enable) enableDisableMutate(true);
+    if (randomPercentage() < mutationRates.disable) enableDisableMutate(false);
 }
 
 void Genome::weightMutate() {
@@ -155,7 +141,7 @@ void Genome::weightMutate() {
     }
 }
 
-// crates new random genes unless the created gene already exists in the array
+// crates a new gene that connects two random neurons that were not connected.
 void Genome::linkMutate(bool forceBias) {
     int neuron1 = randomNeuron(true);
     int neuron2 = randomNeuron(false);
@@ -221,7 +207,7 @@ bool Genome::containsLink(Gene * link) {
 }
 
 
-//create a new gene between two of them
+//create a new neuron between two connected ones    x->y      x->z->y
 void Genome::nodeMutate() {
     if (genes.size() == 0)  return;
 
@@ -232,6 +218,7 @@ void Genome::nodeMutate() {
         return;
     }
 
+    // delete old gene
     genes[randGene]->setEnabled(false);
 
 
@@ -239,7 +226,7 @@ void Genome::nodeMutate() {
     lastNeuronCreated++;
 
 
-    //Create  gene1 that gets gene as input
+    //Create gene1 that gets gene as input
     int into = genes[randGene]->getInto();
     int out = lastNeuronCreated;
     double weight = 1.0;
@@ -317,9 +304,14 @@ int Genome::randomNeuron(bool isInput) {
 
 
 
-void Genome::firstGenome() {
+void Genome::randomGenome() {
     lastNeuronCreated = Pool::INPUT_SIZE;
-    mutate();
+
+    for (int i = 0; i < randomPercentage()*500; i++){
+        if (randomPercentage() < mutationRates.link) linkMutate(false);
+        if (randomPercentage() < mutationRates.bias) linkMutate(true);
+        if (randomPercentage() < mutationRates.node) nodeMutate();
+    }
 }
 
 

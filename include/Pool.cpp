@@ -14,15 +14,15 @@ int Pool::INPUT_SIZE = ScreenHeight*ScreenWidth;
 //number of buttons
 int Pool::OUTPUT_SIZE = 3;
 
-int Pool::POPULATION = 20;
+int Pool::POPULATION = 30;
 
 double Pool::PerturbChance = 0.90;
-double Pool::CrossoverChance = 0.75;
+double Pool::CrossoverChance = 0.50;
 
 double Pool::ConnMutateChance = 0.25;
 double Pool::LinkMutateChance = 0.70;
 double Pool::NodeMutateChance = 0.50;
-double Pool::BiasMutateChance = 0.40;
+double Pool::BiasMutateChance = 0.10;
 double Pool::EnableMutateChance = 0.2;
 double Pool::DisableMutateChance = 0.4;
 double Pool::StepSize = 0.1;
@@ -34,12 +34,14 @@ int Pool::MaxNodes = 1000000;
 Pool::Pool() {
     generation = 0;
     currentGenome = 0;
-    nBest = 5;
-    nSurvivors = Pool::POPULATION/2;
+    nSurvivors = Pool::POPULATION/3;
+    nBest = nSurvivors/2;
+    nRandom = Pool::POPULATION/3;
+    nEliteSelection = Pool::POPULATION/3;
 
     for (int i = 0; i < Pool::POPULATION; i++) {
         Genome* basic = new Genome();
-        basic->firstGenome();
+        basic->randomGenome();
         genomes.push_back(basic);
     }
 }
@@ -316,19 +318,13 @@ void Pool::cullSpecies(bool keepBest) {
 }
 
 Genome* Pool::crossover(Genome* g1, Genome* g2) {
-
-    // Make sure g1 is the higher fitness genome
-    if (g2->getFitness() > g1->getFitness()) {
-        Genome* tempg = g1;
-        g1 = g2;
-        g2 = tempg;
-    }
-
     Genome* child = new Genome();
 
     vector<Gene*> genes1 = g1->getGenes();
     vector<Gene*> genes2 = g2->getGenes();
 
+
+    // merge both gene's vectors together
     for (int i = 0; i < genes1.size(); i++) {
         child->addGene(genes1[i]);
     }
@@ -337,9 +333,16 @@ Genome* Pool::crossover(Genome* g1, Genome* g2) {
         child->addGene(genes2[i]);
     }
 
+    // get the maxNeuron created value
     child->setLastNeuronCreated(max(g1->getMaxNeuron(), g2->getMaxNeuron()));
 
-    child->copyMutationRates(g1->getMutationRates());
+    // Copy mutationRates from best genome
+    if (g2->getFitness() > g1->getFitness()) {
+        child->copyMutationRates(g1->getMutationRates());
+    }
+    else {
+        child->copyMutationRates(g2->getMutationRates());
+    }
 
     return child;
 }
@@ -395,7 +398,7 @@ vector<Genome*> Pool::rouletteSelection(){
         else if (survivingGenomes.size() < nBest) {
             totalChance -= 100.0f * (float) genomesArray[i]->getFitness() / totalFitness;
 
-            survivingGenomes.push_back(genomesArray[i]);
+            survivingGenomes.push_back(new Genome(genomesArray[i]->getGenes(), genomesArray[i]->getFitness(), genomesArray[i]->getAdjustedFitness(), genomesArray[i]->getLastNeuronCreated(), genomesArray[i]->getGlobalRank(), genomesArray[i]->getMutationRates()));
             genomesArray.erase(genomesArray.begin()+i);
             i--;
         }
@@ -418,7 +421,7 @@ vector<Genome*> Pool::rouletteSelection(){
             // genome survives and survivingChance is subtracted to totalChance
             // genome is removed from the array, so that it cannot be chosen again
             if (x >= percentageCounter && x <= (percentageCounter + survivingChance)) {
-                survivingGenomes.push_back(genomesArray[i]);
+                survivingGenomes.push_back(new Genome(genomesArray[i]->getGenes(), genomesArray[i]->getFitness(), genomesArray[i]->getAdjustedFitness(), genomesArray[i]->getLastNeuronCreated(), genomesArray[i]->getGlobalRank(), genomesArray[i]->getMutationRates()));
                 totalChance -= survivingChance;
                 genomesArray.erase(genomesArray.begin()+i);
                 i--;
@@ -444,7 +447,7 @@ vector<Genome*> Pool::eliteSelection(){
         // avoid having NaN
         if (averageFitness[generation] > 0)
             // calculate number of children to breed, and decrease it depending on nSurvivors
-            average = (nSurvivors/POPULATION) * ((double)genomes[g]->getFitness()/(double)averageFitness[generation]);
+            average = (nEliteSelection/POPULATION) * ((double)genomes[g]->getFitness()/(double)averageFitness[generation]);
 
         int breed = round(average);
 
@@ -477,11 +480,13 @@ void Pool::newGeneration() {
 
     // add random children until the population limit is reached
     while (children.size() + genomes.size() < Pool::POPULATION) {
-        children.push_back(breedChild(rand()%genomes.size()));
+        Genome* basic = new Genome();
+        basic->randomGenome();
+        children.push_back(basic);
     }
 
     for (int i = 0; i < children.size(); i++) {
-        genomes.push_back(children[i]);
+        genomes.push_back(new Genome(children[i]->getGenes(), children[i]->getFitness(), children[i]->getAdjustedFitness(), children[i]->getLastNeuronCreated(), children[i]->getGlobalRank(), children[i]->getMutationRates()));
     }
 
     // mutate all but the best
