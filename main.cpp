@@ -716,12 +716,14 @@ void gnuplot(Pool pool) {
     cin.clear();
     cin.ignore(cin.rdbuf()->in_avail());
     cin.get();
+
+    g1.reset_all();
 }
 
 int main( int argc, char** argv ) {
     string saveLocation = "../Saves/"+getDate()+".json";
-    string loadLocation = "../Saves/9:4:2018_9-33-47.json";
-    bool poolFromFile = false;
+    string loadLocation = "../Saves/15:4:2018_18-43-22.json";
+    bool poolFromFile = true;
     bool gameFromScreen = false;
     bool* running = new bool(true);
     vector<Mat> sprites;       // collect the sprites for fitness

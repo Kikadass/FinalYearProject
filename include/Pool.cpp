@@ -389,9 +389,9 @@ vector<Genome*> Pool::rouletteSelection(){
 
 
     // the n best genomes always survive, n = keepBest
-    // if the fitness is = 0, delete genome
+    // if the fitness is <= 0, delete genome
     for (int i = 0; i < genomesArray.size(); i++) {
-        if (genomesArray[i]->getFitness() == 0){
+        if (genomesArray[i]->getFitness() <= 0){
             genomesArray.erase(genomesArray.begin()+i);
             i--;
         }
@@ -442,12 +442,11 @@ vector<Genome*> Pool::eliteSelection(){
     // add
     for (int g = 0; g < genomes.size(); g++) {
         double average = 0;
-        int l = averageFitness[generation];
 
         // avoid having NaN
         if (averageFitness[generation] > 0)
             // calculate number of children to breed, and decrease it depending on nSurvivors
-            average = (nEliteSelection/POPULATION) * ((double)genomes[g]->getFitness()/(double)averageFitness[generation]);
+            average = ((double)nEliteSelection/(double)POPULATION) * ((double)genomes[g]->getFitness()/(double)averageFitness[generation]);
 
         int breed = round(average);
 
