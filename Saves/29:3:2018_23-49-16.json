@@ -1,0 +1,2366 @@
+{
+    "pool": {
+        "BiasMutateChance": 0.4,
+        "ConnMutateChance": 0.25,
+        "CrossoverChance": 0.75,
+        "DELTA_DISJOINT": 2.0,
+        "DELTA_THRESHOLD": 1.0,
+        "DELTA_WEIGHTS": 0.4,
+        "DisableMutateChance": 0.4,
+        "EnableMutateChance": 0.2,
+        "INPUT_SIZE": 320,
+        "LinkMutateChance": 2.0,
+        "MaxNodes": 1000000,
+        "NodeMutateChance": 0.5,
+        "OUTPUT_SIZE": 3,
+        "POPULATION": 20,
+        "PerturbChance": 0.9,
+        "STALE_SPECIES": 15,
+        "ScreenHeight": 16,
+        "ScreenWidth": 20,
+        "StepSize": 0.1,
+        "TIMEOUT_CONSTANT": 1000,
+        "currentGenome": 0,
+        "generation": 5,
+        "genome0": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 32647,
+                "into": 313,
+                "out": 321,
+                "weight": 1.0
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 32647,
+                "into": 313,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 32647,
+                "into": 321,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "lastNeuronCreated": 321,
+            "mutationRates": {
+                "bias": 0.38,
+                "connections": 0.2375,
+                "disable": 0.421052,
+                "enable": 0.210526,
+                "link": 1.9,
+                "node": 0.526315,
+                "step": 0.105263
+            }
+        },
+        "genome1": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 7368034,
+                "into": 107,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 160,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 82,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 320,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 321,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "lastNeuronCreated": 321,
+            "mutationRates": {
+                "bias": 0.38,
+                "connections": 0.2375,
+                "disable": 0.421052,
+                "enable": 0.210526,
+                "link": 2.10526,
+                "node": 0.475,
+                "step": 0.095
+            }
+        },
+        "genome10": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 0,
+                "out": 321,
+                "weight": -2.09025
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 322,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene10": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 121,
+                "out": 1000001,
+                "weight": -2.09025
+            },
+            "gene11": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000001,
+                "weight": 2.0
+            },
+            "gene12": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 2,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene13": {
+                "enabled": 1,
+                "innovation": 0,
+                "into": 323,
+                "out": 1000001,
+                "weight": -2.185249
+            },
+            "gene14": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 153,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene15": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 28,
+                "out": 1000002,
+                "weight": -2.09025
+            },
+            "gene16": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 198,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene17": {
+                "enabled": 1,
+                "innovation": 21,
+                "into": 325,
+                "out": 1000002,
+                "weight": 1.714751
+            },
+            "gene18": {
+                "enabled": 1,
+                "innovation": 323,
+                "into": 325,
+                "out": 325,
+                "weight": -2.0
+            },
+            "gene19": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 191,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 0,
+                "innovation": 5,
+                "into": 193,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene20": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 323,
+                "out": 326,
+                "weight": 1.0
+            },
+            "gene21": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 326,
+                "out": 1000001,
+                "weight": -2.185249
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 0,
+                "into": 299,
+                "out": 321,
+                "weight": -2.09025
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 153,
+                "out": 321,
+                "weight": -2.09025
+            },
+            "gene5": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 324,
+                "out": 321,
+                "weight": -2.09025
+            },
+            "gene6": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene7": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 320,
+                "out": 325,
+                "weight": -2.0
+            },
+            "gene8": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 0,
+                "out": 1000001,
+                "weight": -2.480249
+            },
+            "gene9": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 321,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "lastNeuronCreated": 326,
+            "mutationRates": {
+                "bias": 0.360999,
+                "connections": 0.277007,
+                "disable": 0.399998,
+                "enable": 0.245546,
+                "link": 1.62901,
+                "node": 0.613864,
+                "step": 0.09025
+            }
+        },
+        "genome11": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 87,
+                "out": 321,
+                "weight": 0.889197
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 87,
+                "out": 1000001,
+                "weight": -2.110803
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 321,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 173,
+                "out": 1000002,
+                "weight": -2.110803
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 209,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene5": {
+                "enabled": 1,
+                "innovation": 32647,
+                "into": 42,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene6": {
+                "enabled": 0,
+                "innovation": 5,
+                "into": 87,
+                "out": 322,
+                "weight": 1.0
+            },
+            "gene7": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 322,
+                "out": 321,
+                "weight": 0.889197
+            },
+            "lastNeuronCreated": 322,
+            "mutationRates": {
+                "bias": 0.399999,
+                "connections": 0.277007,
+                "disable": 0.399999,
+                "enable": 0.2,
+                "link": 1.999997,
+                "node": 0.499999,
+                "step": 0.110803
+            }
+        },
+        "genome12": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 7368034,
+                "into": 107,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 160,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene10": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 322,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 0,
+                "innovation": 1610612736,
+                "into": 82,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 320,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 321,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene5": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 80,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene6": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 307,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene7": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 237,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene8": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene9": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 82,
+                "out": 322,
+                "weight": 1.0
+            },
+            "lastNeuronCreated": 322,
+            "mutationRates": {
+                "bias": 0.361,
+                "connections": 0.25,
+                "disable": 0.443212,
+                "enable": 0.2,
+                "link": 2.21606,
+                "node": 0.45125,
+                "step": 0.1
+            }
+        },
+        "genome13": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 32647,
+                "into": 313,
+                "out": 321,
+                "weight": 1.0
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 32647,
+                "into": 313,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 32647,
+                "into": 321,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 190,
+                "out": 1000002,
+                "weight": 2.0
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 27,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene5": {
+                "enabled": 0,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene6": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 313,
+                "out": 322,
+                "weight": 1.0
+            },
+            "gene7": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 322,
+                "out": 321,
+                "weight": 1.0
+            },
+            "lastNeuronCreated": 322,
+            "mutationRates": {
+                "bias": 0.361,
+                "connections": 0.25,
+                "disable": 0.399999,
+                "enable": 0.2,
+                "link": 1.999997,
+                "node": 0.499999,
+                "step": 0.1
+            }
+        },
+        "genome14": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 215,
+                "out": 321,
+                "weight": -2.1
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene10": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 215,
+                "out": 1000001,
+                "weight": -2.1
+            },
+            "gene11": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 321,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene12": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 47,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene13": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 322,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene14": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 323,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene15": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene16": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 324,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene17": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 146,
+                "out": 324,
+                "weight": -2.0
+            },
+            "gene18": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 162,
+                "out": 323,
+                "weight": 2.0
+            },
+            "gene19": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 144,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 199,
+                "out": 321,
+                "weight": -2.194999
+            },
+            "gene20": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 320,
+                "out": 324,
+                "weight": -2.0
+            },
+            "gene21": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 231,
+                "out": 325,
+                "weight": 1.0
+            },
+            "gene22": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 325,
+                "out": 1000000,
+                "weight": -2.194999
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 280,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 1395618674,
+                "into": 263,
+                "out": 323,
+                "weight": 1.005
+            },
+            "gene5": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 320,
+                "out": 323,
+                "weight": -2.0
+            },
+            "gene6": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 322,
+                "out": 324,
+                "weight": -2.1
+            },
+            "gene7": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000000,
+                "weight": -2.1
+            },
+            "gene8": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 39,
+                "out": 1000000,
+                "weight": -2.194999
+            },
+            "gene9": {
+                "enabled": 0,
+                "innovation": 5,
+                "into": 231,
+                "out": 1000000,
+                "weight": -2.194999
+            },
+            "lastNeuronCreated": 325,
+            "mutationRates": {
+                "bias": 0.399998,
+                "connections": 0.225624,
+                "disable": 0.399998,
+                "enable": 0.180499,
+                "link": 2.216053,
+                "node": 0.451249,
+                "step": 0.1
+            }
+        },
+        "genome15": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 320,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 193,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene10": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 325,
+                "weight": -2.0
+            },
+            "gene11": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene12": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 321,
+                "out": 1000000,
+                "weight": -2.185249
+            },
+            "gene13": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 134,
+                "out": 1000000,
+                "weight": -2.185249
+            },
+            "gene14": {
+                "enabled": 0,
+                "innovation": 13,
+                "into": 325,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene15": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 216,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene16": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 322,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene17": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 247,
+                "out": 1000002,
+                "weight": -1.90975
+            },
+            "gene18": {
+                "enabled": 1,
+                "innovation": 1395618674,
+                "into": 320,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene19": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 240,
+                "out": 1000002,
+                "weight": 2.09025
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 124,
+                "out": 321,
+                "weight": -1.90975
+            },
+            "gene20": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 0,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene21": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 270,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene22": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 245,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene23": {
+                "enabled": 1,
+                "innovation": 32647,
+                "into": 172,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene24": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 326,
+                "weight": 1.0
+            },
+            "gene25": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 326,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 286,
+                "out": 322,
+                "weight": -2.09025
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 255,
+                "out": 322,
+                "weight": 2.0
+            },
+            "gene5": {
+                "enabled": 1,
+                "innovation": 32647,
+                "into": 323,
+                "out": 322,
+                "weight": -2.0
+            },
+            "gene6": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 322,
+                "weight": -2.185249
+            },
+            "gene7": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 324,
+                "out": 322,
+                "weight": -2.09025
+            },
+            "gene8": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 286,
+                "out": 324,
+                "weight": 0.814751
+            },
+            "gene9": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 279,
+                "out": 324,
+                "weight": -2.09025
+            },
+            "lastNeuronCreated": 326,
+            "mutationRates": {
+                "bias": 0.491091,
+                "connections": 0.225624,
+                "disable": 0.360999,
+                "enable": 0.199999,
+                "link": 2.216053,
+                "node": 0.451249,
+                "step": 0.09025
+            }
+        },
+        "genome16": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 7368034,
+                "into": 107,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 160,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 82,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 320,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 321,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene5": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 199,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene6": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 105,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene7": {
+                "enabled": 0,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000001,
+                "weight": 2.0
+            },
+            "gene8": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 320,
+                "out": 322,
+                "weight": 1.0
+            },
+            "gene9": {
+                "enabled": 1,
+                "innovation": 29,
+                "into": 322,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "lastNeuronCreated": 322,
+            "mutationRates": {
+                "bias": 0.399999,
+                "connections": 0.225625,
+                "disable": 0.443212,
+                "enable": 0.221606,
+                "link": 1.999997,
+                "node": 0.45125,
+                "step": 0.09025
+            }
+        },
+        "genome17": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 291,
+                "out": 321,
+                "weight": -2.09025
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 260,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene10": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 219,
+                "out": 1000002,
+                "weight": -2.09025
+            },
+            "gene11": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 291,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene12": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 321,
+                "out": 1000002,
+                "weight": -2.09025
+            },
+            "gene13": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 14,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene14": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000002,
+                "weight": -2.09025
+            },
+            "gene15": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 322,
+                "out": 1000002,
+                "weight": -2.095
+            },
+            "gene16": {
+                "enabled": 1,
+                "innovation": 323,
+                "into": 253,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene17": {
+                "enabled": 1,
+                "innovation": 323,
+                "into": 244,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene18": {
+                "enabled": 1,
+                "innovation": 323,
+                "into": 254,
+                "out": 323,
+                "weight": -2.0
+            },
+            "gene19": {
+                "enabled": 1,
+                "innovation": 323,
+                "into": 320,
+                "out": 323,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 153,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene20": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 14,
+                "out": 324,
+                "weight": 1.0
+            },
+            "gene21": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 324,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 322,
+                "weight": -2.0
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 219,
+                "out": 323,
+                "weight": -2.0
+            },
+            "gene5": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000000,
+                "weight": -2.185249
+            },
+            "gene6": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 78,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene7": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 57,
+                "out": 1000000,
+                "weight": -2.09025
+            },
+            "gene8": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 208,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene9": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 279,
+                "out": 1000001,
+                "weight": -2.09025
+            },
+            "lastNeuronCreated": 324,
+            "mutationRates": {
+                "bias": 0.443211,
+                "connections": 0.225624,
+                "disable": 0.325802,
+                "enable": 0.180499,
+                "link": 2.216053,
+                "node": 0.499998,
+                "step": 0.09025
+            }
+        },
+        "genome18": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 320,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 193,
+                "out": 321,
+                "weight": -2.185249
+            },
+            "gene10": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 325,
+                "weight": 0.90975
+            },
+            "gene11": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000000,
+                "weight": -2.09025
+            },
+            "gene12": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 321,
+                "out": 1000000,
+                "weight": -2.185249
+            },
+            "gene13": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 134,
+                "out": 1000000,
+                "weight": -2.185249
+            },
+            "gene14": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 325,
+                "out": 1000000,
+                "weight": -2.09025
+            },
+            "gene15": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 216,
+                "out": 1000001,
+                "weight": -2.09025
+            },
+            "gene16": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 322,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene17": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 247,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene18": {
+                "enabled": 1,
+                "innovation": 1395618674,
+                "into": 320,
+                "out": 1000002,
+                "weight": -2.00475
+            },
+            "gene19": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 240,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 0,
+                "innovation": 5,
+                "into": 124,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene20": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 0,
+                "out": 1000002,
+                "weight": -2.09025
+            },
+            "gene21": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 298,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene22": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 155,
+                "out": 322,
+                "weight": -2.0
+            },
+            "gene23": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 6,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene24": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 320,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene25": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 286,
+                "out": 326,
+                "weight": 1.0
+            },
+            "gene26": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 326,
+                "out": 324,
+                "weight": -2.0
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 286,
+                "out": 322,
+                "weight": -2.0
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 255,
+                "out": 322,
+                "weight": -2.185249
+            },
+            "gene5": {
+                "enabled": 1,
+                "innovation": 32647,
+                "into": 323,
+                "out": 322,
+                "weight": -2.0
+            },
+            "gene6": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 322,
+                "weight": -2.185249
+            },
+            "gene7": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 324,
+                "out": 322,
+                "weight": -2.09025
+            },
+            "gene8": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 286,
+                "out": 324,
+                "weight": -2.0
+            },
+            "gene9": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 279,
+                "out": 324,
+                "weight": -2.09025
+            },
+            "lastNeuronCreated": 326,
+            "mutationRates": {
+                "bias": 0.491091,
+                "connections": 0.249999,
+                "disable": 0.360999,
+                "enable": 0.180499,
+                "link": 2.216053,
+                "node": 0.451249,
+                "step": 0.09025
+            }
+        },
+        "genome19": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 320,
+                "out": 321,
+                "weight": 1.0
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 64,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 20,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 192,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene5": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 195,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene6": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 20,
+                "out": 322,
+                "weight": 1.0
+            },
+            "gene7": {
+                "enabled": 0,
+                "innovation": 13,
+                "into": 322,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "lastNeuronCreated": 322,
+            "mutationRates": {
+                "bias": 0.399999,
+                "connections": 0.225625,
+                "disable": 0.361,
+                "enable": 0.221606,
+                "link": 1.805,
+                "node": 0.45125,
+                "step": 0.1
+            }
+        },
+        "genome2": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 156,
+                "out": 321,
+                "weight": 1.0
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 156,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 32647,
+                "into": 321,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 178,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 6,
+                "out": 1000002,
+                "weight": 2.0
+            },
+            "lastNeuronCreated": 321,
+            "mutationRates": {
+                "bias": 0.421052,
+                "connections": 0.263157,
+                "disable": 0.421052,
+                "enable": 0.210526,
+                "link": 2.10526,
+                "node": 0.526315,
+                "step": 0.095
+            }
+        },
+        "genome3": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 320,
+                "out": 321,
+                "weight": 1.0
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 64,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 20,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "lastNeuronCreated": 321,
+            "mutationRates": {
+                "bias": 0.38,
+                "connections": 0.2375,
+                "disable": 0.38,
+                "enable": 0.210526,
+                "link": 1.9,
+                "node": 0.475,
+                "step": 0.105263
+            }
+        },
+        "genome4": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 87,
+                "out": 321,
+                "weight": 1.0
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 87,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 321,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 173,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "lastNeuronCreated": 321,
+            "mutationRates": {
+                "bias": 0.38,
+                "connections": 0.263157,
+                "disable": 0.38,
+                "enable": 0.19,
+                "link": 1.9,
+                "node": 0.475,
+                "step": 0.105263
+            }
+        },
+        "genome5": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 215,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 321,
+                "weight": -2.1
+            },
+            "gene10": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 215,
+                "out": 1000001,
+                "weight": -2.1
+            },
+            "gene11": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 321,
+                "out": 1000001,
+                "weight": -2.1
+            },
+            "gene12": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 47,
+                "out": 1000001,
+                "weight": -1.9
+            },
+            "gene13": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 322,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene14": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 323,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene15": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene16": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 324,
+                "out": 1000002,
+                "weight": -2.1
+            },
+            "gene17": {
+                "enabled": 1,
+                "innovation": 32647,
+                "into": 24,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene18": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 135,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene19": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 314,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 199,
+                "out": 321,
+                "weight": -2.194999
+            },
+            "gene20": {
+                "enabled": 0,
+                "innovation": 1395618674,
+                "into": 231,
+                "out": 325,
+                "weight": 1.0
+            },
+            "gene21": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 325,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 280,
+                "out": 321,
+                "weight": -2.1
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 1395618674,
+                "into": 263,
+                "out": 323,
+                "weight": 0.805001
+            },
+            "gene5": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 320,
+                "out": 323,
+                "weight": -2.0
+            },
+            "gene6": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 322,
+                "out": 324,
+                "weight": -2.1
+            },
+            "gene7": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene8": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 39,
+                "out": 1000000,
+                "weight": -2.194999
+            },
+            "gene9": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 231,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "lastNeuronCreated": 325,
+            "mutationRates": {
+                "bias": 0.399998,
+                "connections": 0.249999,
+                "disable": 0.360999,
+                "enable": 0.199999,
+                "link": 2.216053,
+                "node": 0.451249,
+                "step": 0.1
+            }
+        },
+        "genome6": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 0,
+                "out": 321,
+                "weight": -2.1
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 322,
+                "out": 321,
+                "weight": 2.0
+            },
+            "gene10": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 121,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene11": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000001,
+                "weight": -2.194999
+            },
+            "gene12": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 2,
+                "out": 1000001,
+                "weight": -2.194999
+            },
+            "gene13": {
+                "enabled": 1,
+                "innovation": 0,
+                "into": 323,
+                "out": 1000001,
+                "weight": -1.995
+            },
+            "gene14": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 153,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene15": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 28,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene16": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 198,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene17": {
+                "enabled": 1,
+                "innovation": 21,
+                "into": 325,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene18": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 286,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene19": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 126,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 193,
+                "out": 321,
+                "weight": 2.0
+            },
+            "gene20": {
+                "enabled": 1,
+                "innovation": 1610612736,
+                "into": 2,
+                "out": 326,
+                "weight": 1.0
+            },
+            "gene21": {
+                "enabled": 0,
+                "innovation": 5,
+                "into": 326,
+                "out": 1000001,
+                "weight": -2.194999
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 0,
+                "into": 299,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 153,
+                "out": 321,
+                "weight": -2.1
+            },
+            "gene5": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 324,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene6": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene7": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 320,
+                "out": 325,
+                "weight": 0.9
+            },
+            "gene8": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 0,
+                "out": 1000001,
+                "weight": -2.29
+            },
+            "gene9": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 321,
+                "out": 1000001,
+                "weight": -2.1
+            },
+            "lastNeuronCreated": 326,
+            "mutationRates": {
+                "bias": 0.399998,
+                "connections": 0.249999,
+                "disable": 0.360999,
+                "enable": 0.221605,
+                "link": 1.62901,
+                "node": 0.554013,
+                "step": 0.1
+            }
+        },
+        "genome7": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 320,
+                "out": 321,
+                "weight": -2.09025
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 193,
+                "out": 321,
+                "weight": -2.185249
+            },
+            "gene10": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 325,
+                "weight": 0.90975
+            },
+            "gene11": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene12": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 321,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene13": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 134,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene14": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 325,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene15": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 216,
+                "out": 1000001,
+                "weight": -2.09025
+            },
+            "gene16": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 322,
+                "out": 1000001,
+                "weight": -2.09025
+            },
+            "gene17": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 247,
+                "out": 1000002,
+                "weight": -2.09025
+            },
+            "gene18": {
+                "enabled": 1,
+                "innovation": 1395618674,
+                "into": 320,
+                "out": 1000002,
+                "weight": -2.00475
+            },
+            "gene19": {
+                "enabled": 0,
+                "innovation": 324,
+                "into": 240,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 124,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene20": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 0,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene21": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 234,
+                "out": 324,
+                "weight": -2.0
+            },
+            "gene22": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 173,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene23": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 31,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene24": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 240,
+                "out": 326,
+                "weight": 1.0
+            },
+            "gene25": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 326,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 286,
+                "out": 322,
+                "weight": -2.09025
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 255,
+                "out": 322,
+                "weight": -2.0
+            },
+            "gene5": {
+                "enabled": 1,
+                "innovation": 32647,
+                "into": 323,
+                "out": 322,
+                "weight": -2.0
+            },
+            "gene6": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 322,
+                "weight": -2.185249
+            },
+            "gene7": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 324,
+                "out": 322,
+                "weight": -1.90975
+            },
+            "gene8": {
+                "enabled": 0,
+                "innovation": 5,
+                "into": 286,
+                "out": 324,
+                "weight": 0.814751
+            },
+            "gene9": {
+                "enabled": 1,
+                "innovation": 324,
+                "into": 279,
+                "out": 324,
+                "weight": -2.09025
+            },
+            "lastNeuronCreated": 326,
+            "mutationRates": {
+                "bias": 0.491091,
+                "connections": 0.225624,
+                "disable": 0.399998,
+                "enable": 0.180499,
+                "link": 2.216053,
+                "node": 0.451249,
+                "step": 0.09025
+            }
+        },
+        "genome8": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 38,
+                "out": 321,
+                "weight": -2.185249
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene10": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 324,
+                "out": 323,
+                "weight": -2.0
+            },
+            "gene11": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 235,
+                "out": 324,
+                "weight": -2.0
+            },
+            "gene12": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 235,
+                "out": 1000000,
+                "weight": -1.90975
+            },
+            "gene13": {
+                "enabled": 1,
+                "innovation": 32647,
+                "into": 321,
+                "out": 1000000,
+                "weight": 2.0
+            },
+            "gene14": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 229,
+                "out": 1000000,
+                "weight": -2.09025
+            },
+            "gene15": {
+                "enabled": 1,
+                "innovation": 323,
+                "into": 228,
+                "out": 1000000,
+                "weight": -1.90975
+            },
+            "gene16": {
+                "enabled": 1,
+                "innovation": 323,
+                "into": 320,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene17": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 268,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene18": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000001,
+                "weight": -2.09025
+            },
+            "gene19": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 295,
+                "out": 1000002,
+                "weight": -2.390512
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 29,
+                "into": 322,
+                "out": 321,
+                "weight": -2.185249
+            },
+            "gene20": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000002,
+                "weight": -2.09025
+            },
+            "gene21": {
+                "enabled": 1,
+                "innovation": 323,
+                "into": 179,
+                "out": 1000002,
+                "weight": -2.09025
+            },
+            "gene22": {
+                "enabled": 1,
+                "innovation": 323,
+                "into": 232,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene23": {
+                "enabled": 1,
+                "innovation": 323,
+                "into": 169,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 274,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 323,
+                "into": 222,
+                "out": 321,
+                "weight": -2.09025
+            },
+            "gene5": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 235,
+                "out": 322,
+                "weight": -2.285249
+            },
+            "gene6": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 33,
+                "out": 322,
+                "weight": -2.0
+            },
+            "gene7": {
+                "enabled": 0,
+                "innovation": 5,
+                "into": 221,
+                "out": 322,
+                "weight": -2.185249
+            },
+            "gene8": {
+                "enabled": 1,
+                "innovation": 29,
+                "into": 323,
+                "out": 322,
+                "weight": -2.285249
+            },
+            "gene9": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 235,
+                "out": 323,
+                "weight": 0.814751
+            },
+            "lastNeuronCreated": 324,
+            "mutationRates": {
+                "bias": 0.443211,
+                "connections": 0.225624,
+                "disable": 0.325802,
+                "enable": 0.199999,
+                "link": 1.999991,
+                "node": 0.451249,
+                "step": 0.09025
+            }
+        },
+        "genome9": {
+            "gene0": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 291,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene1": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 260,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene10": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 219,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene11": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 291,
+                "out": 1000002,
+                "weight": -2.194999
+            },
+            "gene12": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 321,
+                "out": 1000002,
+                "weight": -2.1
+            },
+            "gene13": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 14,
+                "out": 1000002,
+                "weight": -1.9
+            },
+            "gene14": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000002,
+                "weight": -2.0
+            },
+            "gene15": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 322,
+                "out": 1000002,
+                "weight": 2.0
+            },
+            "gene16": {
+                "enabled": 1,
+                "innovation": 323,
+                "into": 151,
+                "out": 322,
+                "weight": -2.0
+            },
+            "gene17": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 136,
+                "out": 323,
+                "weight": -2.0
+            },
+            "gene18": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 279,
+                "out": 324,
+                "weight": 1.0
+            },
+            "gene19": {
+                "enabled": 1,
+                "innovation": 13,
+                "into": 324,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "gene2": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 153,
+                "out": 321,
+                "weight": -2.0
+            },
+            "gene3": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 322,
+                "weight": 0.805001
+            },
+            "gene4": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 219,
+                "out": 323,
+                "weight": 0.9
+            },
+            "gene5": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 320,
+                "out": 1000000,
+                "weight": -1.995
+            },
+            "gene6": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 78,
+                "out": 1000000,
+                "weight": -2.285249
+            },
+            "gene7": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 57,
+                "out": 1000000,
+                "weight": -2.1
+            },
+            "gene8": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 208,
+                "out": 1000000,
+                "weight": -2.0
+            },
+            "gene9": {
+                "enabled": 1,
+                "innovation": 5,
+                "into": 279,
+                "out": 1000001,
+                "weight": -2.0
+            },
+            "lastNeuronCreated": 324,
+            "mutationRates": {
+                "bias": 0.443211,
+                "connections": 0.203626,
+                "disable": 0.325802,
+                "enable": 0.180499,
+                "link": 1.999991,
+                "node": 0.451249,
+                "step": 0.1
+            }
+        }
+    }
+}
