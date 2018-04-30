@@ -56,10 +56,6 @@ void Gene::setValues(int into, int out, double weight, bool enabled){
     Gene::enabled = enabled;
 }
 
-void Gene::innitializeWeight() {
-    weight = rand() /double{RAND_MAX};
-}
-
 void Gene::setWeight(double weight){
     Gene::weight = weight;
 }
@@ -68,4 +64,3 @@ void Gene::setWeight(double weight){
 void Gene::setEnabled(bool enabled) {
     Gene::enabled = enabled;
 }
-

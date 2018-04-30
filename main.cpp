@@ -722,7 +722,7 @@ void gnuplot(Pool pool) {
 
 int main( int argc, char** argv ) {
     string saveLocation = "../Saves/"+getDate()+".json";
-    string loadLocation = "../Saves/15:4:2018_18-43-22.json";
+    string loadLocation = "../Saves/29:4:2018_21-52-0.json";
     bool poolFromFile = true;
     bool gameFromScreen = false;
     bool* running = new bool(true);
@@ -752,11 +752,10 @@ int main( int argc, char** argv ) {
             sleep(1);
         }
 
+        cout << "Current Generation: " << pool.getGeneration() << " Current Genome: " << pool.getCurrentGenome() << endl;
         cout << "Generating Network!" << endl;
-
         pool.getGenomes()[pool.getCurrentGenome()]->generateNetwork();
         pool.getGenomes()[pool.getCurrentGenome()]->showGenome();
-
 
         while (!dead) {
             Mat *tiles = new Mat;
@@ -774,7 +773,6 @@ int main( int argc, char** argv ) {
             //create array of inputs
             vector<double> inputs;
 
-            cout << "Current Generation: " << pool.getGeneration() << " Current Genome: " << pool.getCurrentGenome() << endl;
             for (int i = 0; i < tiles->rows; i++){
                 for (int j = 0; j < tiles->cols; j++){
                     double tile = tiles->at<float>(i, j);

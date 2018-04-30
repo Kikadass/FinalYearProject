@@ -131,13 +131,17 @@ void Genome::mutate() {
     if (randomPercentage() < mutationRates.disable) enableDisableMutate(false);
 }
 
+float Genome::innitializeWeight() {
+    return randomPercentage() * 4 - 2;
+}
+
 void Genome::weightMutate() {
     double step = mutationRates.step;
 
     for (int i = 0; i < genes.size(); i++) {
         if (rand() % 2 < Pool::PerturbChance) {
             genes[i]->setWeight(genes[i]->getWeight() + randomPercentage() * step * 2 - step);
-        } else genes[i]->setWeight(randomPercentage() * 4 - 2);
+        } else genes[i]->setWeight(innitializeWeight());
     }
 }
 
@@ -148,7 +152,6 @@ void Genome::linkMutate(bool forceBias) {
 
     int into = 0;
     int out = 0;
-    double weight;
     bool enabled = true;
 
     if (forceBias) {
@@ -179,9 +182,7 @@ void Genome::linkMutate(bool forceBias) {
     out = neuron2;
 
 
-    weight = randomPercentage() * 4 - 2;
-
-    Gene * newLink = new Gene(into, out, weight, enabled);
+    Gene * newLink = new Gene(into, out, innitializeWeight(), enabled);
 
     // if that gene already exists, merge both weights
     if (containsLink(newLink)) {
@@ -229,7 +230,7 @@ void Genome::nodeMutate() {
     //Create gene1 that gets gene as input
     int into = genes[randGene]->getInto();
     int out = lastNeuronCreated;
-    double weight = 1.0;
+    double weight = innitializeWeight();
     bool enabled = true;
     Gene * g1 = new Gene(into, out, weight, enabled);
     genes.push_back(g1);
@@ -307,7 +308,7 @@ int Genome::randomNeuron(bool isInput) {
 void Genome::randomGenome() {
     lastNeuronCreated = Pool::INPUT_SIZE;
 
-    for (int i = 0; i < randomPercentage()*500; i++){
+    for (int i = 0; i < randomPercentage()*1000; i++){
         if (randomPercentage() < mutationRates.link) linkMutate(false);
         if (randomPercentage() < mutationRates.bias) linkMutate(true);
         if (randomPercentage() < mutationRates.node) nodeMutate();
@@ -464,8 +465,7 @@ int Genome::evaluateNetwork(vector<double> inputs) {
 
     */
 
-
-    cout << "Pressed button: " <<  pressed << endl;
+    if (Debug) cout << "Pressed button: " <<  pressed << endl;
 
     return pressed;
 }

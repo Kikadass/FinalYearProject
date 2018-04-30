@@ -24,7 +24,6 @@ public:
 
 
     //SETTERS
-    void innitializeWeight();
     void setWeight(double weight);
     void setEnabled(bool enabled);
 
@@ -34,7 +33,6 @@ public:
     int getInnovation();
     bool isEnabled();
     double getWeight();
-
 
 
 private:

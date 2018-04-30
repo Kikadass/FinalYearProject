@@ -459,8 +459,6 @@ vector<Genome*> Pool::eliteSelection(){
     return children;
 }
 
-// remove the bottom half of the genomes of each species
-// remove
 void Pool::newGeneration() {
     sort(genomes.begin(), genomes.end(), isLhsFitnessBigger);
     vector<Genome *> survivingGenomes = rouletteSelection();
@@ -490,7 +488,9 @@ void Pool::newGeneration() {
 
     // mutate all but the best
     for (int i = nBest; i < genomes.size(); i++) {
-        genomes[i]->mutate();
+        for (int j = 0; j < Genome::randomPercentage()*6; j++) {
+            genomes[i]->mutate();
+        }
     }
 
     generation++;

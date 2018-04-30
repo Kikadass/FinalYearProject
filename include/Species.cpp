@@ -111,8 +111,6 @@ Genome* Species::breedChild() {
         child = new Genome(genome.getGenes(), genome.getFitness(), genome.getAdjustedFitness(), genome.getLastNeuronCreated(), genome.getGlobalRank(), genome.getMutationRates());
     }
 
-    child->mutate();
-
     return child;
 }
 

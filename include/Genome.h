@@ -78,6 +78,8 @@ private:
     void showGene(int iterations, int neuron);
 
     double evaluateNeuron(int neuron);
+
+    float innitializeWeight();
 };
 
 
