@@ -405,7 +405,7 @@ void Genome::evaluateNetworkToFile(vector<double> inputs) {
     myfile << "Finished!";
     myfile.close();
 
-    cout << "Pressed buttons: " <<  pressedButtons[0] << " " << pressedButtons[1] << " " <<pressedButtons[2] << endl;
+    if (Debug) cout << "Pressed buttons: " <<  pressedButtons[0] << " " << pressedButtons[1] << " " <<pressedButtons[2] << endl;
 }
 
 int Genome::evaluateNetwork(vector<double> inputs) {

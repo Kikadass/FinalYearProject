@@ -722,7 +722,7 @@ void gnuplot(Pool pool) {
 
 int main( int argc, char** argv ) {
     string saveLocation = "../Saves/"+getDate()+".json";
-    string loadLocation = "../Saves/29:4:2018_21-52-0.json";
+    string loadLocation = "../Saves/4:5:2018_20-52-6.json";
     bool poolFromFile = true;
     bool gameFromScreen = false;
     bool* running = new bool(true);
