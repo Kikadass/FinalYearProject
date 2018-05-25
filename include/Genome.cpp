@@ -139,7 +139,7 @@ void Genome::weightMutate() {
     double step = mutationRates.step;
 
     for (int i = 0; i < genes.size(); i++) {
-        if (rand() % 2 < Pool::PerturbChance) {
+        if (randomPercentage() < Pool::PerturbChance) {
             genes[i]->setWeight(genes[i]->getWeight() + randomPercentage() * step * 2 - step);
         } else genes[i]->setWeight(innitializeWeight());
     }
@@ -432,38 +432,18 @@ int Genome::evaluateNetwork(vector<double> inputs) {
     int pressed = -1;
     int maxValue = -1;
 
-    cout << "Network size: " << network.size() << endl;
-
     // go throught the outputs (in theory 4) and choose the output with the bigger value
-    for (int i = 0; i < Pool::OUTPUT_SIZE; i++) {
-        if (network[Pool::MaxNodes + i].getValue() > maxValue) {
-            maxValue = network[Pool::MaxNodes + i].getValue();
-            pressed = i+1;
-        }
-    }
-
-
-    //check which buttons are true and which ara false
-    /*
     int anyPressed = false;
     for (int i = 0; i < Pool::OUTPUT_SIZE; i++) {
-        if (network[Pool::MaxNodes + i].getValue() > 0.5) {
-            //Down up left right
-
-            // Avoid having more then 1 button true
-            if (anyPressed){
-                anyPressed = false;
-                pressed = -1;
-                break;
-            }
-            else{
-                anyPressed = true;
-                pressed = i+1;
-            }
+        // if a button has already been pressed save who ever value is higher
+                // else, if value is over 0.5 press that button
+        if ((network[Pool::MaxNodes + i].getValue() > 0.5 && !anyPressed) || (anyPressed && network[Pool::MaxNodes + i].getValue() > maxValue)) {
+            maxValue = network[Pool::MaxNodes + i].getValue();
+            pressed = i+1;
+            anyPressed = true;
         }
     }
 
-    */
 
     if (Debug) cout << "Pressed button: " <<  pressed << endl;
 

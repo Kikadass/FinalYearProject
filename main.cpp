@@ -621,7 +621,7 @@ string getDate(){
 
 
 //returns if player has died or not
-bool playGameFromScreen(Pool pool, Mat *tiles, bool* running, vector<Mat> sprites){
+bool playGameFromScreen(Pool pool, Mat *tiles, bool* running, vector<Mat> sprites, bool aiVision){
     // check keyPress
     int keyPressed = waitKeyEx(1);
 
@@ -653,9 +653,10 @@ bool playGameFromScreen(Pool pool, Mat *tiles, bool* running, vector<Mat> sprite
     // convert values between 0 and 1 being 1 255
     *tiles /= 255;
 
-    Mat saveTiles = *tiles;
-    scaleUp(saveTiles, 20);
-
+    if (aiVision) {
+        Mat saveTiles = *tiles;
+        scaleUp(saveTiles, 20);
+    }
     return false;
 }
 
@@ -721,10 +722,11 @@ void gnuplot(Pool pool) {
 }
 
 int main( int argc, char** argv ) {
-    string saveLocation = "../Saves/"+getDate()+".json";
-    string loadLocation = "../Saves/4:5:2018_20-52-6.json";
-    bool poolFromFile = false;
+    string saveLocation = "../Saves/"+getDate()+"0.6insteadOf0.4Disable.json";
+    string loadLocation = "../Saves/24:5:2018_0-21-420.6insteadOf0.4Disable.json";
+    bool poolFromFile = true;
     bool gameFromScreen = true;
+    bool aiVision = false; // show what the AI sees
     bool* running = new bool(true);
     vector<Mat> sprites;       // collect the sprites for fitness
 
@@ -761,7 +763,7 @@ int main( int argc, char** argv ) {
             Mat *tiles = new Mat;
 
             if (gameFromScreen){
-                dead = playGameFromScreen(pool, tiles, running, sprites);
+                dead = playGameFromScreen(pool, tiles, running, sprites, aiVision);
             }
             else {
                 dead = playFromFile(pool, tiles);
@@ -791,6 +793,11 @@ int main( int argc, char** argv ) {
         }
 
         pool.nextGenome(saveLocation);
+
+        // termination contition
+        if (pool.getGeneration() >= 5000){
+            *running = false;
+        }
     }
 
     gnuplot(pool);

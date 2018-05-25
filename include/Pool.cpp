@@ -24,7 +24,7 @@ double Pool::LinkMutateChance = 0.70;
 double Pool::NodeMutateChance = 0.50;
 double Pool::BiasMutateChance = 0.10;
 double Pool::EnableMutateChance = 0.2;
-double Pool::DisableMutateChance = 0.4;
+double Pool::DisableMutateChance = 0.6;
 double Pool::StepSize = 0.1;
 
 int Pool::TIMEOUT_CONSTANT = 1000;
@@ -337,7 +337,7 @@ Genome* Pool::crossover(Genome* g1, Genome* g2) {
     child->setLastNeuronCreated(max(g1->getMaxNeuron(), g2->getMaxNeuron()));
 
     // Copy mutationRates from best genome
-    if (g2->getFitness() > g1->getFitness()) {
+    if (g2->getFitness() < g1->getFitness()) {
         child->copyMutationRates(g1->getMutationRates());
     }
     else {
